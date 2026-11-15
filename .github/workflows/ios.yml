@@ -15,6 +15,10 @@ jobs:
         run: |
           cat HanziSprout/Question.swift scripts/question_checks.swift > /tmp/question_checks.swift
           swift /tmp/question_checks.swift
+      - name: Test pinyin tone normalization
+        run: |
+          cat HanziSprout/PinyinVoice.swift scripts/pinyin_checks.swift > /tmp/pinyin_checks.swift
+          swift /tmp/pinyin_checks.swift
       - name: Build iPhone and iPad simulator app
         run: xcodebuild -project HanziSprout.xcodeproj -scheme HanziSprout -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath build CODE_SIGNING_ALLOWED=NO build
       - name: Check built bundle identity and resources
@@ -26,6 +30,11 @@ jobs:
         with:
           name: HanziSprout-Simulator
           path: build/Build/Products/Debug-iphonesimulator/HanziSprout.app
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Native-home-previews
+          path: Home-*.png
   writer:
     runs-on: ubuntu-latest
     steps:

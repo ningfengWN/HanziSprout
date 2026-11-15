@@ -10,3 +10,9 @@ for path in paths:
 for char in '蝴蝶今天很开心我和妈妈去公园':
     assert (root/(char+'.json')).exists(), char
 print(f'Validated {len(paths)} offline characters')
+
+voice = json.loads((root.parent/'PinyinVoice.json').read_text())
+assert len(voice) >= 1000
+for syllable, word in {'háng':'杭','xíng':'形','dié':'叠','lǜ':'律'}.items():
+    assert voice[syllable] == word
+print('Pinyin pronunciation index verified')
