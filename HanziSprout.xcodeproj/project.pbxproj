@@ -1,37 +1,257 @@
 // !$*UTF8*$!
-{ archiveVersion = 1; classes = {}; objectVersion = 56; objects = {
-9727B9EED8ACD2EE46E136A0 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContentView.swift"; sourceTree = "<group>"; };
-E11030640FCC0E9D6783BF78 = { isa = PBXBuildFile; fileRef = 9727B9EED8ACD2EE46E136A0; };
-4065201E817FBDC3F7AD985C = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CrayonTheme.swift"; sourceTree = "<group>"; };
-DCE65D174DF6268288059E79 = { isa = PBXBuildFile; fileRef = 4065201E817FBDC3F7AD985C; };
-11DEDA116A6379348AE14298 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HanziSproutApp.swift"; sourceTree = "<group>"; };
-2C55EF8E927926909783A5EB = { isa = PBXBuildFile; fileRef = 11DEDA116A6379348AE14298; };
-CF46D4464B54084CB250AD43 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PinyinVoice.swift"; sourceTree = "<group>"; };
-15424484C94368813292202A = { isa = PBXBuildFile; fileRef = CF46D4464B54084CB250AD43; };
-ACA17E0A42359C34E3E4432C = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Question.swift"; sourceTree = "<group>"; };
-A20637F79A317DFE317161E0 = { isa = PBXBuildFile; fileRef = ACA17E0A42359C34E3E4432C; };
-FE2683FD76BFC62C0464E4D1 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SpeechInput.swift"; sourceTree = "<group>"; };
-019AA4E3B2A9AE8B5DF26681 = { isa = PBXBuildFile; fileRef = FE2683FD76BFC62C0464E4D1; };
-EF7D667ADCC0FF9AB0015757 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WritingView.swift"; sourceTree = "<group>"; };
-2482F727D7FD9652E9D92230 = { isa = PBXBuildFile; fileRef = EF7D667ADCC0FF9AB0015757; };
-0189424A5A60FED329FA868E = { isa = PBXFileReference; lastKnownFileType = folder; path = LearningAssets; sourceTree = "<group>"; };
-D141FA623566F7518D1F3EAE = { isa = PBXBuildFile; fileRef = 0189424A5A60FED329FA868E; };
-AE7368CAB1CA7CA754B38D49 = { isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-74C2431FE30C4A47C8443B80 = { isa = PBXBuildFile; fileRef = AE7368CAB1CA7CA754B38D49; };
-38A007151ABE87CC01A5B6E9 = { isa = PBXFileReference; explicitFileType = wrapper.application; path = HanziSprout.app; sourceTree = BUILT_PRODUCTS_DIR; };
-482182478A3ECD4745BEA917 = { isa = PBXGroup; children = (9727B9EED8ACD2EE46E136A0,4065201E817FBDC3F7AD985C,11DEDA116A6379348AE14298,CF46D4464B54084CB250AD43,ACA17E0A42359C34E3E4432C,FE2683FD76BFC62C0464E4D1,EF7D667ADCC0FF9AB0015757,0189424A5A60FED329FA868E,AE7368CAB1CA7CA754B38D49,); path = HanziSprout; sourceTree = "<group>"; };
-FBDC4F23F93125BBEEAE800C = { isa = PBXGroup; children = (38A007151ABE87CC01A5B6E9,); name = Products; sourceTree = "<group>"; };
-B28B7AF69320201D1CF206EB = { isa = PBXGroup; children = (482182478A3ECD4745BEA917,FBDC4F23F93125BBEEAE800C,); sourceTree = "<group>"; };
-BCE16DD0260827ECF338C787 = { isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (E11030640FCC0E9D6783BF78,DCE65D174DF6268288059E79,2C55EF8E927926909783A5EB,15424484C94368813292202A,A20637F79A317DFE317161E0,019AA4E3B2A9AE8B5DF26681,2482F727D7FD9652E9D92230,); runOnlyForDeploymentPostprocessing = 0; };
-ECE2D868E17AEF81A05610A3 = { isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (D141FA623566F7518D1F3EAE,74C2431FE30C4A47C8443B80,); runOnlyForDeploymentPostprocessing = 0; };
-7561BFB015D8F536760CB671 = { isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
-89E1FD6268CC0F221A2BE178 = { isa = XCBuildConfiguration; name = Debug; buildSettings = { SDKROOT = iphoneos; IPHONEOS_DEPLOYMENT_TARGET = 16.0; CLANG_ENABLE_MODULES = YES; SWIFT_VERSION = 5.0; }; };
-7082CC0B6FC1282FCEABD07A = { isa = XCBuildConfiguration; name = Debug; buildSettings = {PRODUCT_NAME = "$(TARGET_NAME)"; PRODUCT_BUNDLE_IDENTIFIER = com.ningfeng.HanziSprout; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = HanziSprout/Info.plist; TARGETED_DEVICE_FAMILY = "1,2"; CODE_SIGN_STYLE = Automatic; ENABLE_USER_SCRIPT_SANDBOXING = NO; CURRENT_PROJECT_VERSION = 3; MARKETING_VERSION = 1.2; ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon; SWIFT_EMIT_LOC_STRINGS = YES; SWIFT_OPTIMIZATION_LEVEL = "-Onone";}; };
-E6DE6C99132752C914FEF632 = { isa = XCBuildConfiguration; name = Release; buildSettings = { SDKROOT = iphoneos; IPHONEOS_DEPLOYMENT_TARGET = 16.0; CLANG_ENABLE_MODULES = YES; SWIFT_VERSION = 5.0; }; };
-639A7CA24D39909E713B47F7 = { isa = XCBuildConfiguration; name = Release; buildSettings = {PRODUCT_NAME = "$(TARGET_NAME)"; PRODUCT_BUNDLE_IDENTIFIER = com.ningfeng.HanziSprout; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = HanziSprout/Info.plist; TARGETED_DEVICE_FAMILY = "1,2"; CODE_SIGN_STYLE = Automatic; ENABLE_USER_SCRIPT_SANDBOXING = NO; CURRENT_PROJECT_VERSION = 3; MARKETING_VERSION = 1.2; ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon; SWIFT_EMIT_LOC_STRINGS = YES;}; };
-793D6D7C60BD6329D6F91FDB = { isa = XCConfigurationList; buildConfigurations = (89E1FD6268CC0F221A2BE178,E6DE6C99132752C914FEF632,); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
-D61E3363DEF3F4E448C68105 = { isa = XCConfigurationList; buildConfigurations = (7082CC0B6FC1282FCEABD07A,639A7CA24D39909E713B47F7,); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
-4197EB0CD81150E5A7991001 = { isa = PBXShellScriptBuildPhase; buildActionMask = 2147483647; files = (); inputPaths = (); outputPaths = (); runOnlyForDeploymentPostprocessing = 0; shellPath = /bin/sh; shellScript = "/bin/sh \"$SRCROOT/scripts/prepare_data.sh\""; };
-0E8A3AD980EC179856012B7E = { isa = PBXNativeTarget; buildConfigurationList = D61E3363DEF3F4E448C68105; buildPhases = (4197EB0CD81150E5A7991001,BCE16DD0260827ECF338C787,7561BFB015D8F536760CB671,ECE2D868E17AEF81A05610A3,); buildRules = (); dependencies = (); name = HanziSprout; productName = HanziSprout; productReference = 38A007151ABE87CC01A5B6E9; productType = "com.apple.product-type.application"; };
-98F54143AB4E86B28C3AFEE0 = { isa = PBXProject; attributes = { LastUpgradeCheck = 1600; TargetAttributes = { 0E8A3AD980EC179856012B7E = { CreatedOnToolsVersion = 16.0; }; }; }; buildConfigurationList = 793D6D7C60BD6329D6F91FDB; compatibilityVersion = "Xcode 14.0"; developmentRegion = zh_CN; hasScannedForEncodings = 0; knownRegions = (zh_CN,en,Base,); mainGroup = B28B7AF69320201D1CF206EB; productRefGroup = FBDC4F23F93125BBEEAE800C; projectDirPath = ""; projectRoot = ""; targets = (0E8A3AD980EC179856012B7E,); };
-}; rootObject = 98F54143AB4E86B28C3AFEE0; }
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		019AA4E3B2A9AE8B5DF26681 /* SpeechInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE2683FD76BFC62C0464E4D1 /* SpeechInput.swift */; };
+		15424484C94368813292202A /* PinyinVoice.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF46D4464B54084CB250AD43 /* PinyinVoice.swift */; };
+		2482F727D7FD9652E9D92230 /* WritingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF7D667ADCC0FF9AB0015757 /* WritingView.swift */; };
+		2C55EF8E927926909783A5EB /* HanziSproutApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11DEDA116A6379348AE14298 /* HanziSproutApp.swift */; };
+		74C2431FE30C4A47C8443B80 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AE7368CAB1CA7CA754B38D49 /* Assets.xcassets */; };
+		A20637F79A317DFE317161E0 /* Question.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA17E0A42359C34E3E4432C /* Question.swift */; };
+		D141FA623566F7518D1F3EAE /* LearningAssets in Resources */ = {isa = PBXBuildFile; fileRef = 0189424A5A60FED329FA868E /* LearningAssets */; };
+		DCE65D174DF6268288059E79 /* CrayonTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4065201E817FBDC3F7AD985C /* CrayonTheme.swift */; };
+		E11030640FCC0E9D6783BF78 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9727B9EED8ACD2EE46E136A0 /* ContentView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0189424A5A60FED329FA868E /* LearningAssets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = LearningAssets; sourceTree = "<group>"; };
+		11DEDA116A6379348AE14298 /* HanziSproutApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HanziSproutApp.swift; sourceTree = "<group>"; };
+		38A007151ABE87CC01A5B6E9 /* HanziSprout.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; path = HanziSprout.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4065201E817FBDC3F7AD985C /* CrayonTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrayonTheme.swift; sourceTree = "<group>"; };
+		9727B9EED8ACD2EE46E136A0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		ACA17E0A42359C34E3E4432C /* Question.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Question.swift; sourceTree = "<group>"; };
+		AE7368CAB1CA7CA754B38D49 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		CF46D4464B54084CB250AD43 /* PinyinVoice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinyinVoice.swift; sourceTree = "<group>"; };
+		EF7D667ADCC0FF9AB0015757 /* WritingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WritingView.swift; sourceTree = "<group>"; };
+		FE2683FD76BFC62C0464E4D1 /* SpeechInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechInput.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		7561BFB015D8F536760CB671 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		482182478A3ECD4745BEA917 /* HanziSprout */ = {
+			isa = PBXGroup;
+			children = (
+				9727B9EED8ACD2EE46E136A0 /* ContentView.swift */,
+				4065201E817FBDC3F7AD985C /* CrayonTheme.swift */,
+				11DEDA116A6379348AE14298 /* HanziSproutApp.swift */,
+				CF46D4464B54084CB250AD43 /* PinyinVoice.swift */,
+				ACA17E0A42359C34E3E4432C /* Question.swift */,
+				FE2683FD76BFC62C0464E4D1 /* SpeechInput.swift */,
+				EF7D667ADCC0FF9AB0015757 /* WritingView.swift */,
+				0189424A5A60FED329FA868E /* LearningAssets */,
+				AE7368CAB1CA7CA754B38D49 /* Assets.xcassets */,
+			);
+			path = HanziSprout;
+			sourceTree = "<group>";
+		};
+		B28B7AF69320201D1CF206EB = {
+			isa = PBXGroup;
+			children = (
+				482182478A3ECD4745BEA917 /* HanziSprout */,
+				FBDC4F23F93125BBEEAE800C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		FBDC4F23F93125BBEEAE800C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				38A007151ABE87CC01A5B6E9 /* HanziSprout.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		0E8A3AD980EC179856012B7E /* HanziSprout */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D61E3363DEF3F4E448C68105 /* Build configuration list for PBXNativeTarget "HanziSprout" */;
+			buildPhases = (
+				4197EB0CD81150E5A7991001 /* ShellScript */,
+				BCE16DD0260827ECF338C787 /* Sources */,
+				7561BFB015D8F536760CB671 /* Frameworks */,
+				ECE2D868E17AEF81A05610A3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = HanziSprout;
+			productName = HanziSprout;
+			productReference = 38A007151ABE87CC01A5B6E9 /* HanziSprout.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		98F54143AB4E86B28C3AFEE0 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					0E8A3AD980EC179856012B7E = {
+						CreatedOnToolsVersion = 16.0;
+					};
+				};
+			};
+			buildConfigurationList = 793D6D7C60BD6329D6F91FDB /* Build configuration list for PBXProject "HanziSprout" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = zh_CN;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				zh_CN,
+				en,
+				Base,
+			);
+			mainGroup = B28B7AF69320201D1CF206EB;
+			productRefGroup = FBDC4F23F93125BBEEAE800C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				0E8A3AD980EC179856012B7E /* HanziSprout */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		ECE2D868E17AEF81A05610A3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D141FA623566F7518D1F3EAE /* LearningAssets in Resources */,
+				74C2431FE30C4A47C8443B80 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		4197EB0CD81150E5A7991001 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/bin/sh \"$SRCROOT/scripts/prepare_data.sh\"";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		BCE16DD0260827ECF338C787 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E11030640FCC0E9D6783BF78 /* ContentView.swift in Sources */,
+				DCE65D174DF6268288059E79 /* CrayonTheme.swift in Sources */,
+				2C55EF8E927926909783A5EB /* HanziSproutApp.swift in Sources */,
+				15424484C94368813292202A /* PinyinVoice.swift in Sources */,
+				A20637F79A317DFE317161E0 /* Question.swift in Sources */,
+				019AA4E3B2A9AE8B5DF26681 /* SpeechInput.swift in Sources */,
+				2482F727D7FD9652E9D92230 /* WritingView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		639A7CA24D39909E713B47F7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 3;
+				DEVELOPMENT_TEAM = 63HR26Z9DJ;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = HanziSprout/Info.plist;
+				MARKETING_VERSION = 1.2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ningfeng.HanziSprout;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		7082CC0B6FC1282FCEABD07A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 3;
+				DEVELOPMENT_TEAM = 63HR26Z9DJ;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = HanziSprout/Info.plist;
+				MARKETING_VERSION = 1.2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ningfeng.HanziSprout;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		89E1FD6268CC0F221A2BE178 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		E6DE6C99132752C914FEF632 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		793D6D7C60BD6329D6F91FDB /* Build configuration list for PBXProject "HanziSprout" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				89E1FD6268CC0F221A2BE178 /* Debug */,
+				E6DE6C99132752C914FEF632 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D61E3363DEF3F4E448C68105 /* Build configuration list for PBXNativeTarget "HanziSprout" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7082CC0B6FC1282FCEABD07A /* Debug */,
+				639A7CA24D39909E713B47F7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 98F54143AB4E86B28C3AFEE0 /* Project object */;
+}
