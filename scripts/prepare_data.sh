@@ -12,9 +12,7 @@ ACTUAL="$(shasum -a 256 "$TEMP_DATA/data.tgz" | cut -d ' ' -f 1)"
 if [ "$ACTUAL" != "$EXPECTED" ]; then echo 'error: Stroke data checksum mismatch'; exit 1; fi
 tar -xzf "$TEMP_DATA/data.tgz" -C "$TEMP_DATA"
 mkdir -p "$DEST"
-# Only the package's one-character JSON names are stroke data.
-for FILE in "$TEMP_DATA"/package/*.json; do
-  NAME="$(basename "$FILE" .json)"
-  if [ "$NAME" != package ]; then cp "$FILE" "$DEST/"; fi
-done
+# Copy as one operation; avoid spawning thousands of subprocesses on macOS.
+cp "$TEMP_DATA"/package/*.json "$DEST/"
+rm -f "$DEST/package.json"
 touch "$DEST/.ready-2.0.1"

@@ -21,3 +21,19 @@ jobs:
         with:
           name: HanziSprout-Simulator
           path: build/Build/Products/Debug-iphonesimulator/HanziSprout.app
+  writer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sh scripts/prepare_data.sh
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --prefix /tmp/hanzi-test playwright@1.58.2
+      - run: /tmp/hanzi-test/node_modules/.bin/playwright install --with-deps chromium
+      - run: NODE_PATH=/tmp/hanzi-test/node_modules node scripts/check_writer.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Writing-screen-previews
+          path: hanzi-*.png
