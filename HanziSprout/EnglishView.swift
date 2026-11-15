@@ -38,9 +38,9 @@ struct EnglishView: View {
                     Picker("学习方式", selection: $mode) {
                         ForEach(Mode.allCases, id: \.self) { Text($0.rawValue).tag($0) }
                     }.pickerStyle(.segmented).disabled(busy)
-                    if mode == .lookup { lookupCard; resultView; quickScenes }
+                    if mode == .lookup { lookupCard; resultView; systemTranslation; quickScenes }
                     else { practiceCard }
-                    Text("本版按内置句库查找，不支持任意句子翻译。纠错只覆盖列出的常见例句；录音可自己回听，不评判发音对错。")
+                    Text("句库可直接用；其他句子可尝试系统离线翻译。纠错只覆盖内置例句；录音供自己回听，不评判发音对错。")
                         .font(.footnote).foregroundStyle(Crayon.ink.opacity(0.85))
                     if let error = audio.error { Text(error).font(.callout).foregroundStyle(.red) }
                 }.padding(20).padding(.bottom, 18).frame(maxWidth: 780).frame(maxWidth: .infinity)
@@ -113,6 +113,22 @@ struct EnglishView: View {
                     Button("填入纠错示例") { direction = .toChinese; query = "Yesterday I go to the park." }
                         .buttonStyle(CrayonButtonStyle()).disabled(busy)
                 }.padding(18).crayonCard(Crayon.blue)
+            }
+        }
+    }
+    @ViewBuilder private var systemTranslation: some View {
+        if let result, !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            switch result {
+            case .missing, .suggestions:
+                if #available(iOS 18.0, *) {
+                    SystemTranslationCard(text: query, direction: direction, audioBusy: busy) { text, language, slow in
+                        guard !speech.isBusy else { return }
+                        audio.speak(text, language: language, slow: slow)
+                    }.id(query + direction.rawValue)
+                } else {
+                    Text("iOS / iPadOS 18 及以上可使用系统离线翻译；当前系统仍可使用内置句库。").font(.caption)
+                }
+            case .phrase, .correction: EmptyView()
             }
         }
     }
