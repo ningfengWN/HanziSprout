@@ -26,7 +26,7 @@ frameworks=obj('frameworks','isa = PBXFrameworksBuildPhase; buildActionMask = 21
 projectconfigs=[]; targetconfigs=[]
 for config in ['Debug','Release']:
  projectconfigs.append(obj('project'+config,f'isa = XCBuildConfiguration; name = {config}; buildSettings = {{ SDKROOT = iphoneos; IPHONEOS_DEPLOYMENT_TARGET = 16.0; CLANG_ENABLE_MODULES = YES; SWIFT_VERSION = 5.0; }};'))
- settings='''PRODUCT_NAME = "$(TARGET_NAME)"; PRODUCT_BUNDLE_IDENTIFIER = com.ningfeng.HanziSprout; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = HanziSprout/Info.plist; TARGETED_DEVICE_FAMILY = "1,2"; CODE_SIGN_STYLE = Automatic; ENABLE_USER_SCRIPT_SANDBOXING = NO; CURRENT_PROJECT_VERSION = 3; MARKETING_VERSION = 1.2; ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon; SWIFT_EMIT_LOC_STRINGS = YES;'''
+ settings='''PRODUCT_NAME = "$(TARGET_NAME)"; PRODUCT_BUNDLE_IDENTIFIER = com.ningfeng.HanziSprout; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = HanziSprout/Info.plist; TARGETED_DEVICE_FAMILY = "1,2"; CODE_SIGN_STYLE = Automatic; ENABLE_USER_SCRIPT_SANDBOXING = NO; CURRENT_PROJECT_VERSION = 4; MARKETING_VERSION = 1.3; ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon; SWIFT_EMIT_LOC_STRINGS = YES;'''
  if config=='Debug': settings+=' SWIFT_OPTIMIZATION_LEVEL = "-Onone";'
  targetconfigs.append(obj('target'+config,f'isa = XCBuildConfiguration; name = {config}; buildSettings = {{{settings}}};'))
 pc=obj('pc',f'isa = XCConfigurationList; buildConfigurations = ({",".join(projectconfigs)},); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release;')

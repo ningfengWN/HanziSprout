@@ -19,6 +19,10 @@ jobs:
         run: |
           cat HanziSprout/PinyinVoice.swift scripts/pinyin_checks.swift > /tmp/pinyin_checks.swift
           swift /tmp/pinyin_checks.swift
+      - name: Test offline English lookup and correction boundaries
+        run: |
+          cat HanziSprout/EnglishCatalog.swift scripts/english_checks.swift > /tmp/english_checks.swift
+          swift /tmp/english_checks.swift HanziSprout/LearningAssets
       - name: Build iPhone and iPad simulator app
         run: xcodebuild -project HanziSprout.xcodeproj -scheme HanziSprout -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath build CODE_SIGNING_ALLOWED=NO build
       - name: Check built bundle identity and resources

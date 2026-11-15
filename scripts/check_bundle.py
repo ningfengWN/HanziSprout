@@ -19,3 +19,7 @@ print('Built app identity, executable, device families, permissions and offline 
 assert (app/'Assets.car').is_file(), 'Compiled asset catalog is missing'
 assert info.get('CFBundleIcons', {}).get('CFBundlePrimaryIcon', {}).get('CFBundleIconName') == 'AppIcon', info
 print('AppIcon catalog and bundle icon registration verified')
+
+for name in ['EnglishPhrases', 'EnglishCorrections']:
+    assert (app/f'LearningAssets/{name}.json').is_file()
+print('Offline English phrase and correction catalogs verified')

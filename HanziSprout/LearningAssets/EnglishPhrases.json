@@ -1,0 +1,748 @@
+[
+  {
+    "id": "p001",
+    "scene": "问候",
+    "chinese": "你好。",
+    "english": "Hello!",
+    "chineseAliases": [
+      "你好",
+      "嗨"
+    ],
+    "englishAliases": [
+      "Hi!"
+    ]
+  },
+  {
+    "id": "p002",
+    "scene": "问候",
+    "chinese": "早上好。",
+    "english": "Good morning!",
+    "chineseAliases": [
+      "早上好"
+    ],
+    "englishAliases": []
+  },
+  {
+    "id": "p003",
+    "scene": "问候",
+    "chinese": "晚上好。",
+    "english": "Good evening!",
+    "chineseAliases": [
+      "晚上好"
+    ],
+    "englishAliases": []
+  },
+  {
+    "id": "p004",
+    "scene": "问候",
+    "chinese": "再见。",
+    "english": "Goodbye!",
+    "chineseAliases": [
+      "再见",
+      "拜拜"
+    ],
+    "englishAliases": [
+      "Bye!"
+    ]
+  },
+  {
+    "id": "p005",
+    "scene": "问候",
+    "chinese": "谢谢你。",
+    "english": "Thank you.",
+    "chineseAliases": [
+      "谢谢",
+      "谢谢你"
+    ],
+    "englishAliases": [
+      "Thanks."
+    ]
+  },
+  {
+    "id": "p006",
+    "scene": "问候",
+    "chinese": "不客气。",
+    "english": "You're welcome.",
+    "chineseAliases": [
+      "不客气",
+      "不用谢"
+    ],
+    "englishAliases": [
+      "You are welcome."
+    ]
+  },
+  {
+    "id": "p007",
+    "scene": "问候",
+    "chinese": "对不起。",
+    "english": "I'm sorry.",
+    "chineseAliases": [
+      "对不起",
+      "抱歉"
+    ],
+    "englishAliases": [
+      "I am sorry.",
+      "Sorry."
+    ]
+  },
+  {
+    "id": "p008",
+    "scene": "问候",
+    "chinese": "没关系。",
+    "english": "That's OK.",
+    "chineseAliases": [
+      "没关系"
+    ],
+    "englishAliases": [
+      "That is OK.",
+      "It's OK."
+    ]
+  },
+  {
+    "id": "p009",
+    "scene": "表达自己",
+    "chinese": "我叫小芽。",
+    "english": "My name is Sprout.",
+    "chineseAliases": [
+      "我叫小芽"
+    ],
+    "englishAliases": []
+  },
+  {
+    "id": "p010",
+    "scene": "表达自己",
+    "chinese": "我七岁了。",
+    "english": "I'm seven years old.",
+    "chineseAliases": [
+      "我七岁",
+      "我七岁了"
+    ],
+    "englishAliases": [
+      "I am seven years old."
+    ]
+  },
+  {
+    "id": "p011",
+    "scene": "表达自己",
+    "chinese": "我很开心。",
+    "english": "I'm happy.",
+    "chineseAliases": [
+      "我很开心",
+      "我很高兴"
+    ],
+    "englishAliases": [
+      "I am happy."
+    ]
+  },
+  {
+    "id": "p012",
+    "scene": "表达自己",
+    "chinese": "我有点难过。",
+    "english": "I'm a little sad.",
+    "chineseAliases": [
+      "我有点难过"
+    ],
+    "englishAliases": [
+      "I am a little sad."
+    ]
+  },
+  {
+    "id": "p013",
+    "scene": "表达自己",
+    "chinese": "我累了。",
+    "english": "I'm tired.",
+    "chineseAliases": [
+      "我累了",
+      "我很累"
+    ],
+    "englishAliases": [
+      "I am tired."
+    ]
+  },
+  {
+    "id": "p014",
+    "scene": "表达自己",
+    "chinese": "我饿了。",
+    "english": "I'm hungry.",
+    "chineseAliases": [
+      "我饿了",
+      "我很饿"
+    ],
+    "englishAliases": [
+      "I am hungry."
+    ]
+  },
+  {
+    "id": "p015",
+    "scene": "表达自己",
+    "chinese": "我渴了。",
+    "english": "I'm thirsty.",
+    "chineseAliases": [
+      "我渴了",
+      "我很渴"
+    ],
+    "englishAliases": [
+      "I am thirsty."
+    ]
+  },
+  {
+    "id": "p016",
+    "scene": "表达自己",
+    "chinese": "我不知道。",
+    "english": "I don't know.",
+    "chineseAliases": [
+      "我不知道"
+    ],
+    "englishAliases": [
+      "I do not know."
+    ]
+  },
+  {
+    "id": "p017",
+    "scene": "在家",
+    "chinese": "请帮帮我。",
+    "english": "Please help me.",
+    "chineseAliases": [
+      "帮帮我",
+      "请帮我",
+      "请帮帮我"
+    ],
+    "englishAliases": [
+      "Can you help me?"
+    ]
+  },
+  {
+    "id": "p018",
+    "scene": "在家",
+    "chinese": "我想喝水。",
+    "english": "I'd like some water.",
+    "chineseAliases": [
+      "我想喝水",
+      "我要喝水"
+    ],
+    "englishAliases": [
+      "I would like some water.",
+      "I want some water."
+    ]
+  },
+  {
+    "id": "p019",
+    "scene": "在家",
+    "chinese": "我想再玩五分钟。",
+    "english": "Can I play for five more minutes?",
+    "chineseAliases": [
+      "我想再玩五分钟",
+      "我可以再玩五分钟吗"
+    ],
+    "englishAliases": []
+  },
+  {
+    "id": "p020",
+    "scene": "在家",
+    "chinese": "该睡觉了。",
+    "english": "It's time for bed.",
+    "chineseAliases": [
+      "该睡觉了",
+      "要睡觉了"
+    ],
+    "englishAliases": [
+      "It is time for bed."
+    ]
+  },
+  {
+    "id": "p021",
+    "scene": "在家",
+    "chinese": "请收好你的玩具。",
+    "english": "Please put your toys away.",
+    "chineseAliases": [
+      "请收好你的玩具",
+      "把玩具收好"
+    ],
+    "englishAliases": []
+  },
+  {
+    "id": "p022",
+    "scene": "在家",
+    "chinese": "我可以自己做。",
+    "english": "I can do it myself.",
+    "chineseAliases": [
+      "我可以自己做",
+      "我能自己做"
+    ],
+    "englishAliases": []
+  },
+  {
+    "id": "p023",
+    "scene": "在家",
+    "chinese": "我准备好了。",
+    "english": "I'm ready.",
+    "chineseAliases": [
+      "我准备好了",
+      "准备好了"
+    ],
+    "englishAliases": [
+      "I am ready."
+    ]
+  },
+  {
+    "id": "p024",
+    "scene": "在家",
+    "chinese": "等一下。",
+    "english": "Wait a moment.",
+    "chineseAliases": [
+      "等一下",
+      "等一会儿"
+    ],
+    "englishAliases": [
+      "Just a moment."
+    ]
+  },
+  {
+    "id": "p025",
+    "scene": "吃东西",
+    "chinese": "请给我一个苹果。",
+    "english": "I'd like an apple, please.",
+    "chineseAliases": [
+      "请给我一个苹果",
+      "我想要一个苹果"
+    ],
+    "englishAliases": [
+      "I would like an apple, please."
+    ]
+  },
+  {
+    "id": "p026",
+    "scene": "吃东西",
+    "chinese": "我喜欢苹果。",
+    "english": "I like apples.",
+    "chineseAliases": [
+      "我喜欢苹果"
+    ],
+    "englishAliases": []
+  },
+  {
+    "id": "p027",
+    "scene": "吃东西",
+    "chinese": "我不喜欢这个。",
+    "english": "I don't like this.",
+    "chineseAliases": [
+      "我不喜欢这个"
+    ],
+    "englishAliases": [
+      "I do not like this."
+    ]
+  },
+  {
+    "id": "p028",
+    "scene": "吃东西",
+    "chinese": "真好吃！",
+    "english": "It's delicious!",
+    "chineseAliases": [
+      "真好吃",
+      "很好吃"
+    ],
+    "englishAliases": [
+      "It is delicious."
+    ]
+  },
+  {
+    "id": "p029",
+    "scene": "吃东西",
+    "chinese": "我吃饱了。",
+    "english": "I'm full.",
+    "chineseAliases": [
+      "我吃饱了",
+      "我饱了"
+    ],
+    "englishAliases": [
+      "I am full."
+    ]
+  },
+  {
+    "id": "p030",
+    "scene": "吃东西",
+    "chinese": "我能再要一点吗？",
+    "english": "Can I have some more?",
+    "chineseAliases": [
+      "我能再要一点吗",
+      "可以再给我一点吗"
+    ],
+    "englishAliases": []
+  },
+  {
+    "id": "p031",
+    "scene": "吃东西",
+    "chinese": "我们一起吃吧。",
+    "english": "Let's eat together.",
+    "chineseAliases": [
+      "我们一起吃吧"
+    ],
+    "englishAliases": [
+      "Let us eat together."
+    ]
+  },
+  {
+    "id": "p032",
+    "scene": "吃东西",
+    "chinese": "请先洗手。",
+    "english": "Please wash your hands first.",
+    "chineseAliases": [
+      "请先洗手",
+      "先洗手"
+    ],
+    "englishAliases": []
+  },
+  {
+    "id": "p033",
+    "scene": "学校",
+    "chinese": "这是我的书。",
+    "english": "This is my book.",
+    "chineseAliases": [
+      "这是我的书"
+    ],
+    "englishAliases": []
+  },
+  {
+    "id": "p034",
+    "scene": "学校",
+    "chinese": "我有一支铅笔。",
+    "english": "I have a pencil.",
+    "chineseAliases": [
+      "我有一支铅笔",
+      "我有一只铅笔"
+    ],
+    "englishAliases": []
+  },
+  {
+    "id": "p035",
+    "scene": "学校",
+    "chinese": "我可以去洗手间吗？",
+    "english": "May I go to the bathroom?",
+    "chineseAliases": [
+      "我可以去洗手间吗",
+      "我可以去厕所吗"
+    ],
+    "englishAliases": [
+      "Can I go to the bathroom?"
+    ]
+  },
+  {
+    "id": "p036",
+    "scene": "学校",
+    "chinese": "请再说一遍。",
+    "english": "Please say that again.",
+    "chineseAliases": [
+      "请再说一遍",
+      "请再说一次"
+    ],
+    "englishAliases": [
+      "Could you say that again?"
+    ]
+  },
+  {
+    "id": "p037",
+    "scene": "学校",
+    "chinese": "请说慢一点。",
+    "english": "Please speak more slowly.",
+    "chineseAliases": [
+      "请说慢一点",
+      "说慢一点"
+    ],
+    "englishAliases": []
+  },
+  {
+    "id": "p038",
+    "scene": "学校",
+    "chinese": "我听不懂。",
+    "english": "I don't understand.",
+    "chineseAliases": [
+      "我听不懂",
+      "我不明白"
+    ],
+    "englishAliases": [
+      "I do not understand."
+    ]
+  },
+  {
+    "id": "p039",
+    "scene": "学校",
+    "chinese": "这个用英语怎么说？",
+    "english": "How do you say this in English?",
+    "chineseAliases": [
+      "这个用英语怎么说"
+    ],
+    "englishAliases": []
+  },
+  {
+    "id": "p040",
+    "scene": "学校",
+    "chinese": "我可以试试吗？",
+    "english": "Can I try?",
+    "chineseAliases": [
+      "我可以试试吗",
+      "我能试试吗"
+    ],
+    "englishAliases": []
+  },
+  {
+    "id": "p041",
+    "scene": "去公园",
+    "chinese": "我们去公园吧。",
+    "english": "Let's go to the park.",
+    "chineseAliases": [
+      "我们去公园吧",
+      "一起去公园吧"
+    ],
+    "englishAliases": [
+      "Let us go to the park."
+    ]
+  },
+  {
+    "id": "p042",
+    "scene": "去公园",
+    "chinese": "今天天气很好。",
+    "english": "It's a lovely day.",
+    "chineseAliases": [
+      "今天天气很好",
+      "今天天气真好"
+    ],
+    "englishAliases": [
+      "It is a lovely day."
+    ]
+  },
+  {
+    "id": "p043",
+    "scene": "去公园",
+    "chinese": "我看见一只鸟。",
+    "english": "I can see a bird.",
+    "chineseAliases": [
+      "我看见一只鸟",
+      "我看到一只鸟"
+    ],
+    "englishAliases": []
+  },
+  {
+    "id": "p044",
+    "scene": "去公园",
+    "chinese": "那是一只蝴蝶。",
+    "english": "That's a butterfly.",
+    "chineseAliases": [
+      "那是一只蝴蝶"
+    ],
+    "englishAliases": [
+      "That is a butterfly."
+    ]
+  },
+  {
+    "id": "p045",
+    "scene": "去公园",
+    "chinese": "我们一起玩吧。",
+    "english": "Let's play together.",
+    "chineseAliases": [
+      "我们一起玩吧",
+      "一起玩吧"
+    ],
+    "englishAliases": [
+      "Let us play together."
+    ]
+  },
+  {
+    "id": "p046",
+    "scene": "去公园",
+    "chinese": "轮到我了。",
+    "english": "It's my turn.",
+    "chineseAliases": [
+      "轮到我了"
+    ],
+    "englishAliases": [
+      "It is my turn."
+    ]
+  },
+  {
+    "id": "p047",
+    "scene": "去公园",
+    "chinese": "轮到你了。",
+    "english": "It's your turn.",
+    "chineseAliases": [
+      "轮到你了"
+    ],
+    "englishAliases": [
+      "It is your turn."
+    ]
+  },
+  {
+    "id": "p048",
+    "scene": "去公园",
+    "chinese": "小心！",
+    "english": "Be careful!",
+    "chineseAliases": [
+      "小心",
+      "当心"
+    ],
+    "englishAliases": []
+  },
+  {
+    "id": "p049",
+    "scene": "买东西",
+    "chinese": "这个多少钱？",
+    "english": "How much is this?",
+    "chineseAliases": [
+      "这个多少钱",
+      "这多少钱"
+    ],
+    "englishAliases": []
+  },
+  {
+    "id": "p050",
+    "scene": "买东西",
+    "chinese": "我想要这个。",
+    "english": "I'd like this one.",
+    "chineseAliases": [
+      "我想要这个",
+      "我要这个"
+    ],
+    "englishAliases": [
+      "I would like this one."
+    ]
+  },
+  {
+    "id": "p051",
+    "scene": "买东西",
+    "chinese": "我可以看看吗？",
+    "english": "May I have a look?",
+    "chineseAliases": [
+      "我可以看看吗",
+      "我能看看吗"
+    ],
+    "englishAliases": [
+      "Can I have a look?"
+    ]
+  },
+  {
+    "id": "p052",
+    "scene": "买东西",
+    "chinese": "有小一点的吗？",
+    "english": "Do you have a smaller one?",
+    "chineseAliases": [
+      "有小一点的吗",
+      "有没有小一点的"
+    ],
+    "englishAliases": []
+  },
+  {
+    "id": "p053",
+    "scene": "买东西",
+    "chinese": "太贵了。",
+    "english": "It's too expensive.",
+    "chineseAliases": [
+      "太贵了"
+    ],
+    "englishAliases": [
+      "It is too expensive."
+    ]
+  },
+  {
+    "id": "p054",
+    "scene": "买东西",
+    "chinese": "不用袋子，谢谢。",
+    "english": "No bag, thank you.",
+    "chineseAliases": [
+      "不用袋子谢谢",
+      "不要袋子谢谢"
+    ],
+    "englishAliases": []
+  },
+  {
+    "id": "p055",
+    "scene": "我的一天",
+    "chinese": "我每天去上学。",
+    "english": "I go to school every day.",
+    "chineseAliases": [
+      "我每天去上学",
+      "我每天上学"
+    ],
+    "englishAliases": []
+  },
+  {
+    "id": "p056",
+    "scene": "我的一天",
+    "chinese": "我昨天去了公园。",
+    "english": "I went to the park yesterday.",
+    "chineseAliases": [
+      "我昨天去了公园",
+      "昨天我去了公园"
+    ],
+    "englishAliases": [
+      "Yesterday I went to the park."
+    ]
+  },
+  {
+    "id": "p057",
+    "scene": "我的一天",
+    "chinese": "我正在读书。",
+    "english": "I'm reading a book.",
+    "chineseAliases": [
+      "我正在读书",
+      "我在看书"
+    ],
+    "englishAliases": [
+      "I am reading a book."
+    ]
+  },
+  {
+    "id": "p058",
+    "scene": "我的一天",
+    "chinese": "我明天想画画。",
+    "english": "I'd like to draw tomorrow.",
+    "chineseAliases": [
+      "我明天想画画"
+    ],
+    "englishAliases": [
+      "I would like to draw tomorrow."
+    ]
+  },
+  {
+    "id": "p059",
+    "scene": "我的一天",
+    "chinese": "我会游泳。",
+    "english": "I can swim.",
+    "chineseAliases": [
+      "我会游泳"
+    ],
+    "englishAliases": []
+  },
+  {
+    "id": "p060",
+    "scene": "我的一天",
+    "chinese": "我喜欢画画。",
+    "english": "I like drawing.",
+    "chineseAliases": [
+      "我喜欢画画"
+    ],
+    "englishAliases": [
+      "I like to draw."
+    ]
+  },
+  {
+    "id": "p061",
+    "scene": "我的一天",
+    "chinese": "她是我的朋友。",
+    "english": "She is my friend.",
+    "chineseAliases": [
+      "她是我的朋友"
+    ],
+    "englishAliases": []
+  },
+  {
+    "id": "p062",
+    "scene": "我的一天",
+    "chinese": "我们昨天玩得很开心。",
+    "english": "We had a great time yesterday.",
+    "chineseAliases": [
+      "我们昨天玩得很开心"
+    ],
+    "englishAliases": [
+      "We had fun yesterday."
+    ]
+  }
+]

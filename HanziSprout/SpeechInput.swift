@@ -33,8 +33,12 @@ final class SpeechInput: NSObject, ObservableObject, AVAudioRecorderDelegate {
     private var timeout: Task<Void, Never>?
     private var interruptionObserver: NSObjectProtocol?
     private var generation = 0
+    private var localeIdentifier: String
+    private let onDeviceOnly: Bool
 
-    override init() {
+    init(localeIdentifier: String = "zh-CN", onDeviceOnly: Bool = false) {
+        self.localeIdentifier = localeIdentifier
+        self.onDeviceOnly = onDeviceOnly
         super.init()
         interruptionObserver = NotificationCenter.default.addObserver(
             forName: AVAudioSession.interruptionNotification, object: nil, queue: .main
@@ -62,8 +66,18 @@ final class SpeechInput: NSObject, ObservableObject, AVAudioRecorderDelegate {
         case .preparing, .transcribing: stop()
         }
     }
+    func setLanguage(_ locale: String) {
+        stop()
+        localeIdentifier = locale
+    }
     private func authorize() {
         stop()
+        if onDeviceOnly {
+            guard let recognizer = SFSpeechRecognizer(locale: Locale(identifier: localeIdentifier)), recognizer.supportsOnDeviceRecognition else {
+                error = "设备暂不支持这个语言的离线听写，请输入文字或点选句子。不会转用云端识别。"
+                return
+            }
+        }
         error = nil
         phase = .preparing
         let token = generation
@@ -143,12 +157,17 @@ final class SpeechInput: NSObject, ObservableObject, AVAudioRecorderDelegate {
             fail("刚才录音太短啦。再点一次，等出现“正在录音”后说话，说完再点“说好了”。")
             return
         }
-        guard let recognizer = SFSpeechRecognizer(locale: Locale(identifier: "zh-CN")), recognizer.isAvailable else {
+        guard let recognizer = SFSpeechRecognizer(locale: Locale(identifier: localeIdentifier)), recognizer.isAvailable else {
             fail("语音识别暂不可用，请检查网络后重新录音，或直接输入文字。")
+            return
+        }
+        if onDeviceOnly && !recognizer.supportsOnDeviceRecognition {
+            fail("设备暂不支持离线听写，请输入文字或点选句子。")
             return
         }
         self.recognizer = recognizer
         let request = SFSpeechURLRecognitionRequest(url: url)
+        request.requiresOnDeviceRecognition = onDeviceOnly
         request.shouldReportPartialResults = true
         request.taskHint = .dictation
         let token = generation
