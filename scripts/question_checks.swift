@@ -1,0 +1,7 @@
+assert(Question.phrase("蝴蝶的蝶怎么写") == "蝶")
+assert(Question.phrase("我想写‘今天很开心’，‘今’怎么写") == "今")
+assert(Question.phrase("今天很开心") == "今天很开心")
+assert(Question.letters("今天，很开心！").map(\.text).joined() == "今天很开心")
+assert(Question.letters("abc123").isEmpty)
+assert(Question.letters("妈妈").map(\.id) == [0, 1])
+print("Question checks passed")
