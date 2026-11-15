@@ -1,0 +1,86 @@
+[
+  {
+    "id": "c001",
+    "original": "Yesterday I go to the park.",
+    "corrected": "I went to the park yesterday.",
+    "chinese": "我昨天去了公园。",
+    "explanation": "yesterday 表示过去；这里用 go 的过去式 went。"
+  },
+  {
+    "id": "c002",
+    "original": "I am go to school every day.",
+    "corrected": "I go to school every day.",
+    "chinese": "我每天去上学。",
+    "explanation": "表达每天的习惯，用 I go；这里不加 am。"
+  },
+  {
+    "id": "c003",
+    "original": "I can swimming.",
+    "corrected": "I can swim.",
+    "chinese": "我会游泳。",
+    "explanation": "can 后面接动词原形 swim。"
+  },
+  {
+    "id": "c004",
+    "original": "I have a apple.",
+    "corrected": "I have an apple.",
+    "chinese": "我有一个苹果。",
+    "explanation": "apple 以元音音素开头，前面用 an。"
+  },
+  {
+    "id": "c005",
+    "original": "She are my friend.",
+    "corrected": "She is my friend.",
+    "chinese": "她是我的朋友。",
+    "explanation": "主语 she 搭配 is。"
+  },
+  {
+    "id": "c006",
+    "original": "I very happy.",
+    "corrected": "I am very happy.",
+    "chinese": "我非常开心。",
+    "explanation": "happy 是形容词，这句话需要 am。"
+  },
+  {
+    "id": "c007",
+    "original": "He go to school every day.",
+    "corrected": "He goes to school every day.",
+    "chinese": "他每天去上学。",
+    "explanation": "一般现在时里，主语 he 后的 go 用 goes。"
+  },
+  {
+    "id": "c008",
+    "original": "I am seven year old.",
+    "corrected": "I am seven years old.",
+    "chinese": "我七岁了。",
+    "explanation": "七岁是 seven years old，year 用复数 years。"
+  },
+  {
+    "id": "c009",
+    "original": "I want drink water.",
+    "corrected": "I want to drink some water.",
+    "chinese": "我想喝水。",
+    "explanation": "want 后接另一个动作时用 want to do。"
+  },
+  {
+    "id": "c010",
+    "original": "I not like this.",
+    "corrected": "I do not like this.",
+    "chinese": "我不喜欢这个。",
+    "explanation": "一般现在时否定用 do not + 动词原形。"
+  },
+  {
+    "id": "c011",
+    "original": "There is two birds.",
+    "corrected": "There are two birds.",
+    "chinese": "有两只鸟。",
+    "explanation": "two birds 是复数，这里用 there are。"
+  },
+  {
+    "id": "c012",
+    "original": "I am hungry yesterday.",
+    "corrected": "I was hungry yesterday.",
+    "chinese": "我昨天饿了。",
+    "explanation": "昨天是过去时间，am 在这里改为 was。"
+  }
+]

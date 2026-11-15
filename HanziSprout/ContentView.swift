@@ -19,7 +19,7 @@ struct ContentView: View {
                         if !phrase.isEmpty { results }
                         examples
                         if !recent.isEmpty { history }
-                        Text("字芽 1.2 · 把今天的小故事写下来")
+                        Text("字芽 1.4 · 把今天的小故事写下来")
                             .font(.system(.footnote, design: .rounded)).foregroundStyle(Crayon.ink.opacity(0.75))
                             .frame(maxWidth: .infinity).padding(.top, 6)
                     }.padding(20).padding(.bottom, 16).frame(maxWidth: 780).frame(maxWidth: .infinity)
@@ -29,6 +29,7 @@ struct ContentView: View {
             .fullScreenCover(item: $selected) { letter in WritingView(letter: letter) }
         }
         .foregroundStyle(Crayon.ink).tint(Crayon.green).preferredColorScheme(.light)
+        .onDisappear { if speech.isBusy { speech.stop() } }
         .onChange(of: speech.transcript) { value in if !value.isEmpty { question = value } }
         .onChange(of: scenePhase) { value in if value == .background { speech.stop() } }
     }
