@@ -23,6 +23,10 @@ jobs:
         run: |
           cat HanziSprout/EnglishCatalog.swift scripts/english_checks.swift > /tmp/english_checks.swift
           swift /tmp/english_checks.swift HanziSprout/LearningAssets
+      - name: Test Zhipu free-model contract without live credentials
+        run: |
+          cat HanziSprout/ZhipuClient.swift scripts/zhipu_checks.swift > /tmp/zhipu_checks.swift
+          swift /tmp/zhipu_checks.swift
       - name: Build iPhone and iPad simulator app
         run: xcodebuild -project HanziSprout.xcodeproj -scheme HanziSprout -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath build CODE_SIGNING_ALLOWED=NO build
       - name: Check built bundle identity and resources

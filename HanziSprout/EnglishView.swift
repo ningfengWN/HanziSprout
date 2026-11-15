@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct EnglishView: View {
-    private enum Mode: String, CaseIterable { case lookup = "中英查句", practice = "场景练习" }
+    private enum Mode: String, CaseIterable { case lookup = "中英查句", practice = "场景练习", ai = "AI 伙伴" }
     private let catalog = EnglishCatalog.bundled()
     @StateObject private var speech = SpeechInput(localeIdentifier: "zh-CN", onDeviceOnly: true)
     @StateObject private var audio = EnglishAudio()
@@ -33,14 +33,15 @@ struct EnglishView: View {
                         }
                         Spacer(minLength: 0)
                     }
-                    Text("离线句库 \(catalog.phrases.count) 句 · 不需要 AI 账号或 API Key")
+                    Text("离线句库 \(catalog.phrases.count) 句 · AI 伙伴可选开启")
                         .font(.callout).foregroundStyle(Crayon.green)
                     Picker("学习方式", selection: $mode) {
                         ForEach(Mode.allCases, id: \.self) { Text($0.rawValue).tag($0) }
                     }.pickerStyle(.segmented).disabled(busy)
                     if mode == .lookup { lookupCard; resultView; systemTranslation; quickScenes }
-                    else { practiceCard }
-                    Text("句库可直接用；其他句子可尝试系统离线翻译。纠错只覆盖内置例句；录音供自己回听，不评判发音对错。")
+                    else if mode == .practice { practiceCard }
+                    else { AIEnglishView() }
+                    Text(mode == .ai ? "AI 伙伴使用智谱模型提供翻译、文字纠错与对话，可能有误；发音仍需自己回听比较。" : "句库可直接用；其他句子可尝试系统离线翻译。离线纠错只覆盖内置例句；录音供自己回听，不评判发音对错。")
                         .font(.footnote).foregroundStyle(Crayon.ink.opacity(0.85))
                     if let error = audio.error { Text(error).font(.callout).foregroundStyle(.red) }
                 }.padding(20).padding(.bottom, 18).frame(maxWidth: 780).frame(maxWidth: .infinity)
