@@ -3,7 +3,7 @@ let writer, character, data, cursor = 0, generation = 0, paused = false, busy = 
 const $ = id => document.getElementById(id);
 function status(text) { $('status').textContent = text; }
 function size() { return Math.max(80, Math.floor(Math.min($('stage').clientWidth, $('stage').clientHeight))); }
-function setBusy(value) { busy = value; $('step').disabled = value; }
+function setBusy(value, mode = 'auto') { busy = value; $('step').disabled = value && mode === 'step'; }
 function reset() {
   generation++; paused = false; cursor = 0;
   $('pause').textContent = '暂停'; setBusy(false);
@@ -46,9 +46,9 @@ $('pause').onclick = () => {
   $('pause').textContent = paused ? '继续' : '暂停';
 };
 $('step').onclick = async () => {
-  if(busy) return;
+  if(busy) reset();
   if(cursor >= data.strokes.length) reset();
-  const token = generation; setBusy(true);
+  const token = generation; setBusy(true, 'step');
   await writer.animateStroke(cursor);
   if(token !== generation) return;
   cursor++; status(`第 ${cursor} 笔 / 共 ${data.strokes.length} 笔`); setBusy(false);
