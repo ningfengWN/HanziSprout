@@ -18,16 +18,21 @@ struct ContentView: View {
                         Text("哪个字，想让我写给你看？").font(.title2.bold())
                         Text("可以说：“蝴蝶的蝶怎么写？”").foregroundStyle(.secondary)
                         TextField("说一句话，或输入一个词", text: $question, axis: .vertical)
-                            .font(.title3).lineLimit(2...4).padding().background(.white, in: RoundedRectangle(cornerRadius: 18))
+                            .disabled(speech.isBusy).font(.title3).lineLimit(2...4).padding().background(.white, in: RoundedRectangle(cornerRadius: 18))
                             .submitLabel(.search).onSubmit(find)
                         HStack(spacing: 12) {
                             Button(action: speech.toggle) {
-                                Label(speech.isRecording ? "说好了，停止" : "按一下，说给我听", systemImage: speech.isRecording ? "stop.circle.fill" : "mic.fill")
+                                Label(speech.buttonTitle, systemImage: speech.isRecording ? "stop.circle.fill" : "mic.fill")
                             }.buttonStyle(.bordered).tint(speech.isRecording ? .red : green)
                             Spacer()
-                            Button("找字", action: find).buttonStyle(.borderedProminent).tint(green).disabled(question.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                            Button("找字", action: find).buttonStyle(.borderedProminent).tint(green).disabled(speech.isBusy || question.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                         }
-                        if speech.isRecording { Text("正在听…说完后点“停止”，再点“找字”。").foregroundStyle(green) }
+                        if speech.isRecording {
+                            Text("正在录音 \(speech.elapsedText) · 可以慢慢说，说完点“说好了”。")
+                                .monospacedDigit().foregroundStyle(green)
+                        }
+                        if speech.phase == .preparing { Text("正在准备麦克风，请允许权限后再开始说话。").font(.callout).foregroundStyle(.secondary) }
+                        if speech.phase == .transcribing { HStack { ProgressView(); Text("正在识别整段录音，完成后点“找字”。").font(.callout) } }
                         if let error = speech.error { Text(error).font(.callout).foregroundStyle(.red) }
                     }
                     if !phrase.isEmpty {
@@ -57,14 +62,14 @@ struct ContentView: View {
                             ForEach(Question.letters(recent)) { letter in Button(letter.text) { open(letter) }.font(.largeTitle).padding(10).foregroundStyle(green) }
                         }
                     }
-                    Text("没有广告 · 不需要账号 · 字形与笔顺可离线查看").font(.footnote).foregroundStyle(.secondary)
+                    Text("字芽 1.1 · 没有广告 · 字形与笔顺可离线查看").font(.footnote).foregroundStyle(.secondary)
                 }.padding(24).frame(maxWidth: 760)
                     .frame(maxWidth: .infinity)
             }.background(Color(red: 0.96, green: 0.96, blue: 0.92))
                 .fullScreenCover(item: $selected) { letter in WritingView(letter: letter) }
         }
         .onChange(of: speech.transcript) { value in if !value.isEmpty { question = value } }
-        .onChange(of: scenePhase) { value in if value != .active { speech.stop() } }
+        .onChange(of: scenePhase) { value in if value == .background { speech.stop() } }
     }
     private func find() {
         speech.stop()

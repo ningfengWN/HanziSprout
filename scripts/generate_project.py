@@ -14,17 +14,19 @@ for path in swifts:
  builds.append(obj('build'+path.name, f'isa = PBXBuildFile; fileRef = {uid(path.name)};'))
 resources=obj('resources','isa = PBXFileReference; lastKnownFileType = folder; path = LearningAssets; sourceTree = "<group>";')
 rbuild=obj('resourcebuild',f'isa = PBXBuildFile; fileRef = {resources};')
+icons=obj('icons','isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = \"<group>\";')
+ibuild=obj('iconbuild',f'isa = PBXBuildFile; fileRef = {icons};')
 product=obj('product','isa = PBXFileReference; explicitFileType = wrapper.application; path = HanziSprout.app; sourceTree = BUILT_PRODUCTS_DIR;')
-sourcegroup=obj('sourcegroup',f'isa = PBXGroup; children = ({",".join(refs+[resources])},); path = HanziSprout; sourceTree = "<group>";')
+sourcegroup=obj('sourcegroup',f'isa = PBXGroup; children = ({",".join(refs+[resources,icons])},); path = HanziSprout; sourceTree = "<group>";')
 products=obj('products',f'isa = PBXGroup; children = ({product},); name = Products; sourceTree = "<group>";')
 main=obj('main',f'isa = PBXGroup; children = ({sourcegroup},{products},); sourceTree = "<group>";')
 sources=obj('sources',f'isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = ({",".join(builds)},); runOnlyForDeploymentPostprocessing = 0;')
-resourcephase=obj('resourcephase',f'isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = ({rbuild},); runOnlyForDeploymentPostprocessing = 0;')
+resourcephase=obj('resourcephase',f'isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = ({rbuild},{ibuild},); runOnlyForDeploymentPostprocessing = 0;')
 frameworks=obj('frameworks','isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0;')
 projectconfigs=[]; targetconfigs=[]
 for config in ['Debug','Release']:
  projectconfigs.append(obj('project'+config,f'isa = XCBuildConfiguration; name = {config}; buildSettings = {{ SDKROOT = iphoneos; IPHONEOS_DEPLOYMENT_TARGET = 16.0; CLANG_ENABLE_MODULES = YES; SWIFT_VERSION = 5.0; }};'))
- settings='''PRODUCT_NAME = "$(TARGET_NAME)"; PRODUCT_BUNDLE_IDENTIFIER = com.ningfeng.HanziSprout; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = HanziSprout/Info.plist; TARGETED_DEVICE_FAMILY = "1,2"; CODE_SIGN_STYLE = Automatic; ENABLE_USER_SCRIPT_SANDBOXING = NO; CURRENT_PROJECT_VERSION = 1; MARKETING_VERSION = 1.0; SWIFT_EMIT_LOC_STRINGS = YES;'''
+ settings='''PRODUCT_NAME = "$(TARGET_NAME)"; PRODUCT_BUNDLE_IDENTIFIER = com.ningfeng.HanziSprout; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = HanziSprout/Info.plist; TARGETED_DEVICE_FAMILY = "1,2"; CODE_SIGN_STYLE = Automatic; ENABLE_USER_SCRIPT_SANDBOXING = NO; CURRENT_PROJECT_VERSION = 2; MARKETING_VERSION = 1.1; ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon; SWIFT_EMIT_LOC_STRINGS = YES;'''
  if config=='Debug': settings+=' SWIFT_OPTIMIZATION_LEVEL = "-Onone";'
  targetconfigs.append(obj('target'+config,f'isa = XCBuildConfiguration; name = {config}; buildSettings = {{{settings}}};'))
 pc=obj('pc',f'isa = XCConfigurationList; buildConfigurations = ({",".join(projectconfigs)},); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release;')

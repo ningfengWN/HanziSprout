@@ -15,3 +15,7 @@ assert not (app/'Contents').exists(), 'macOS bundle layout is not valid for this
 assert (app/'LearningAssets/writer.html').is_file()
 assert len(list((app/'LearningAssets/Strokes').glob('*.json'))) >= 9500
 print('Built app identity, executable, device families, permissions and offline resources verified')
+
+assert (app/'Assets.car').is_file(), 'Compiled asset catalog is missing'
+assert info.get('CFBundleIcons', {}).get('CFBundlePrimaryIcon', {}).get('CFBundleIconName') == 'AppIcon', info
+print('AppIcon catalog and bundle icon registration verified')

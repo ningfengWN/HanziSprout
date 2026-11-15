@@ -20,6 +20,7 @@ jobs:
       - name: Check built bundle identity and resources
         run: python3 scripts/check_bundle.py build/Build/Products/Debug-iphonesimulator/HanziSprout.app
       - name: Install and launch on iPhone and iPad simulators
+        timeout-minutes: 10
         run: python3 scripts/check_simulators.py build/Build/Products/Debug-iphonesimulator/HanziSprout.app
       - uses: actions/upload-artifact@v4
         with:
