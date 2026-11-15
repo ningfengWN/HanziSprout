@@ -34,7 +34,7 @@
 ```sh
 sh scripts/prepare_data.sh
 python3 scripts/check_data.py
-node --check HanziSprout/Resources/writer.js
+node --check HanziSprout/LearningAssets/writer.js
 # macOS:
 cat HanziSprout/Question.swift scripts/question_checks.swift > /tmp/question_checks.swift
 swift /tmp/question_checks.swift
@@ -47,11 +47,11 @@ GitHub Actions 在 macOS 上运行字库检查、解析检查、iPhone/iPad 通�
 
 ## 第三方许可
 
-- [Hanzi Writer](https://github.com/chanind/hanzi-writer) — MIT，见 `HanziSprout/Resources/Licenses/HanziWriter-MIT.txt`。
-- [Hanzi Writer Data](https://github.com/chanind/hanzi-writer-data)，来源 [Make Me a Hanzi](https://github.com/skishore/makemeahanzi) / 文鼎字形 — Arphic Public License，完整原始许可和署名随 App 捆绑在 `Resources/Licenses`。字形数据未修改。
+- [Hanzi Writer](https://github.com/chanind/hanzi-writer) — MIT，见 `HanziSprout/LearningAssets/Licenses/HanziWriter-MIT.txt`。
+- [Hanzi Writer Data](https://github.com/chanind/hanzi-writer-data)，来源 [Make Me a Hanzi](https://github.com/skishore/makemeahanzi) / 文鼎字形 — Arphic Public License，完整原始许可和署名随 App 捆绑在 `LearningAssets/Licenses`。字形数据未修改。
 
 ## 更新后仍提示 Missing bundle ID
 
-关闭 Xcode，拉取最新 main（或重新下载 ZIP），重新打开工程。在 Product 菜单选择 Clean Build Folder（Shift+Command+K），再运行。工程使用显式 `HanziSprout/Info.plist`，将 Bundle ID、可执行文件名和版本写入实际 App。
+关闭 Xcode，拉取最新 main（或重新下载 ZIP），重新打开工程。在 Product 菜单选择 Clean Build Folder（Shift+Command+K），再运行。工程使用显式 `HanziSprout/Info.plist`，将 Bundle ID、可执行文件名和版本写入实际 App。资源目录使用 `LearningAssets`，避免 App 根目录出现保留的 `Resources` 目录，导致系统错误识别 Bundle 布局。
 
 若清理后仍使用旧产物，退出 Xcode，在 Finder 的“前往文件夹”打开 `~/Library/Developer/Xcode/DerivedData`，只删除 `HanziSprout-` 开头的目录，重新打开工程运行。无需重置模拟器，也不需要修改 Apple ID。

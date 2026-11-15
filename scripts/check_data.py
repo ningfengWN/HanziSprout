@@ -1,6 +1,6 @@
 from pathlib import Path
 import json
-root = Path(__file__).resolve().parents[1]/'HanziSprout/Resources/Strokes'
+root = Path(__file__).resolve().parents[1]/'HanziSprout/LearningAssets/Strokes'
 paths = list(root.glob('*.json'))
 assert len(paths) >= 9500
 for path in paths:

@@ -2,7 +2,7 @@
 # Build-time only; the installed App never downloads stroke data.
 set -eu
 PROJECT_ROOT="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
-DEST="$PROJECT_ROOT/HanziSprout/Resources/Strokes"
+DEST="$PROJECT_ROOT/HanziSprout/LearningAssets/Strokes"
 if [ -f "$DEST/.ready-2.0.1" ]; then exit 0; fi
 TEMP_DATA="$(mktemp -d)"
 trap 'rm -rf "$TEMP_DATA"' EXIT

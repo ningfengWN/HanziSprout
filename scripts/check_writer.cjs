@@ -5,7 +5,7 @@ const path=require('path');
  const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
  const page=await browser.newPage({viewport:{width:390,height:680}});
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
- const dir=path.resolve(__dirname,'../HanziSprout/Resources');
+ const dir=path.resolve(__dirname,'../HanziSprout/LearningAssets');
  await page.goto('file://'+dir+'/writer.html');
  const data=JSON.parse(fs.readFileSync(dir+'/Strokes/今.json','utf8'));
  await page.evaluate(d=>window.start('今',d),data);

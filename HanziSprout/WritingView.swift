@@ -41,7 +41,7 @@ struct StrokeWebView: UIViewRepresentable {
         view.backgroundColor = .clear
         view.scrollView.isScrollEnabled = false
         view.navigationDelegate = context.coordinator
-        if let url = Bundle.main.url(forResource: "writer", withExtension: "html", subdirectory: "Resources") {
+        if let url = Bundle.main.url(forResource: "writer", withExtension: "html", subdirectory: "LearningAssets") {
             view.loadFileURL(url, allowingReadAccessTo: url.deletingLastPathComponent())
         }
         return view
@@ -55,7 +55,7 @@ struct StrokeWebView: UIViewRepresentable {
         init(character: String) { self.character = character }
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
             let encodedCharacter = String(data: try! JSONEncoder().encode(character), encoding: .utf8)!
-            let url = Bundle.main.url(forResource: character, withExtension: "json", subdirectory: "Resources/Strokes")
+            let url = Bundle.main.url(forResource: character, withExtension: "json", subdirectory: "LearningAssets/Strokes")
             let data = url.flatMap { try? String(contentsOf: $0, encoding: .utf8) } ?? "null"
             webView.evaluateJavaScript("window.start(\(encodedCharacter), \(data));", completionHandler: nil)
         }

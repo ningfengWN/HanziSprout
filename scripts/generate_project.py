@@ -12,7 +12,7 @@ refs=[]; builds=[]
 for path in swifts:
  refs.append(obj(path.name, f'isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = {q(path.name)}; sourceTree = "<group>";'))
  builds.append(obj('build'+path.name, f'isa = PBXBuildFile; fileRef = {uid(path.name)};'))
-resources=obj('resources','isa = PBXFileReference; lastKnownFileType = folder; path = Resources; sourceTree = "<group>";')
+resources=obj('resources','isa = PBXFileReference; lastKnownFileType = folder; path = LearningAssets; sourceTree = "<group>";')
 rbuild=obj('resourcebuild',f'isa = PBXBuildFile; fileRef = {resources};')
 product=obj('product','isa = PBXFileReference; explicitFileType = wrapper.application; path = HanziSprout.app; sourceTree = BUILT_PRODUCTS_DIR;')
 sourcegroup=obj('sourcegroup',f'isa = PBXGroup; children = ({",".join(refs+[resources])},); path = HanziSprout; sourceTree = "<group>";')

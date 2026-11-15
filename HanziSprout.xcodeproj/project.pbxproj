@@ -10,7 +10,7 @@ FE2683FD76BFC62C0464E4D1 = { isa = PBXFileReference; lastKnownFileType = sourcec
 019AA4E3B2A9AE8B5DF26681 = { isa = PBXBuildFile; fileRef = FE2683FD76BFC62C0464E4D1; };
 EF7D667ADCC0FF9AB0015757 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WritingView.swift"; sourceTree = "<group>"; };
 2482F727D7FD9652E9D92230 = { isa = PBXBuildFile; fileRef = EF7D667ADCC0FF9AB0015757; };
-0189424A5A60FED329FA868E = { isa = PBXFileReference; lastKnownFileType = folder; path = Resources; sourceTree = "<group>"; };
+0189424A5A60FED329FA868E = { isa = PBXFileReference; lastKnownFileType = folder; path = LearningAssets; sourceTree = "<group>"; };
 D141FA623566F7518D1F3EAE = { isa = PBXBuildFile; fileRef = 0189424A5A60FED329FA868E; };
 38A007151ABE87CC01A5B6E9 = { isa = PBXFileReference; explicitFileType = wrapper.application; path = HanziSprout.app; sourceTree = BUILT_PRODUCTS_DIR; };
 482182478A3ECD4745BEA917 = { isa = PBXGroup; children = (9727B9EED8ACD2EE46E136A0,11DEDA116A6379348AE14298,ACA17E0A42359C34E3E4432C,FE2683FD76BFC62C0464E4D1,EF7D667ADCC0FF9AB0015757,0189424A5A60FED329FA868E,); path = HanziSprout; sourceTree = "<group>"; };
