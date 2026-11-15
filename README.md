@@ -41,7 +41,7 @@ swift /tmp/question_checks.swift
 xcodebuild -project HanziSprout.xcodeproj -scheme HanziSprout -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
 ```
 
-GitHub Actions 在 macOS 上运行字库检查、解析检查、iPhone/iPad 通用模拟器构建。麦克风授权、中文语音识别和真机签名需要在设备上确认。
+GitHub Actions 在 macOS 上运行字库检查、解析检查、iPhone/iPad 通用模拟器构建，并检查实际产物的 Bundle ID、可执行文件和离线资源，分别在 iPhone、iPad 模拟器安装与启动。麦克风授权、中文语音识别和真机签名需要在设备上确认。
 
 工程文件已提交，不依赖 XcodeGen；修改源文件列表后可运行 `python3 scripts/generate_project.py` 重建工程。
 
@@ -49,3 +49,9 @@ GitHub Actions 在 macOS 上运行字库检查、解析检查、iPhone/iPad 通�
 
 - [Hanzi Writer](https://github.com/chanind/hanzi-writer) — MIT，见 `HanziSprout/Resources/Licenses/HanziWriter-MIT.txt`。
 - [Hanzi Writer Data](https://github.com/chanind/hanzi-writer-data)，来源 [Make Me a Hanzi](https://github.com/skishore/makemeahanzi) / 文鼎字形 — Arphic Public License，完整原始许可和署名随 App 捆绑在 `Resources/Licenses`。字形数据未修改。
+
+## 更新后仍提示 Missing bundle ID
+
+关闭 Xcode，拉取最新 main（或重新下载 ZIP），重新打开工程。在 Product 菜单选择 Clean Build Folder（Shift+Command+K），再运行。工程使用显式 `HanziSprout/Info.plist`，将 Bundle ID、可执行文件名和版本写入实际 App。
+
+若清理后仍使用旧产物，退出 Xcode，在 Finder 的“前往文件夹”打开 `~/Library/Developer/Xcode/DerivedData`，只删除 `HanziSprout-` 开头的目录，重新打开工程运行。无需重置模拟器，也不需要修改 Apple ID。
