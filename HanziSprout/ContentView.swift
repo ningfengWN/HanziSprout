@@ -19,7 +19,7 @@ struct ContentView: View {
                         if !phrase.isEmpty { results }
                         examples
                         if !recent.isEmpty { history }
-                        Text("字芽 1.4 · 把今天的小故事写下来")
+                        Text("字芽 1.4.1 · 把今天的小故事写下来")
                             .font(.system(.footnote, design: .rounded)).foregroundStyle(Crayon.ink.opacity(0.75))
                             .frame(maxWidth: .infinity).padding(.top, 6)
                     }.padding(20).padding(.bottom, 16).frame(maxWidth: 780).frame(maxWidth: .infinity)

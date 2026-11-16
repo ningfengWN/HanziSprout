@@ -10,13 +10,15 @@ final class TutorModel: ObservableObject {
     @Published private(set) var loading = false
     @Published private(set) var error: String?
     @Published private(set) var turns: [TutorTurn] = []
+    @Published private(set) var nextAllowedAt: Date?
+    var canSend: Bool { !loading && (nextAllowedAt.map { $0 <= Date() } ?? true) }
     private var history: [TutorMessage] = []
     private var work: Task<Void, Never>?
     private var generation = 0
     private let client = ZhipuClient()
 
     func send(_ input: String, task: TutorTask, audience: TutorAudience, scene: String) {
-        guard !loading else { return }
+        guard canSend else { return }
         error = nil
         let key: String
         do {
@@ -44,7 +46,10 @@ final class TutorModel: ObservableObject {
             } catch {
                 guard let self, !Task.isCancelled, self.generation == token else { return }
                 self.loading = false
-                if let known = error as? TutorError { self.error = known.localizedDescription }
+                if let known = error as? TutorError {
+                    self.error = known.localizedDescription
+                    if known.cooldown > 0 { self.nextAllowedAt = Date().addingTimeInterval(known.cooldown) }
+                }
                 else if let network = error as? URLError, network.code == .timedOut { self.error = "等待回答超时，请稍后重试。" }
                 else { self.error = "请求未完成，请检查网络后重试。离线功能仍可使用。" }
             }
