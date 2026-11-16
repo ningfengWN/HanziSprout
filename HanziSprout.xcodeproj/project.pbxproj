@@ -224,7 +224,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = HanziSprout/Info.plist;
 				MARKETING_VERSION = 1.4;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ningfeng.HanziSprout;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ningfeng.HanziSprout.yaya;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -242,7 +242,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = HanziSprout/Info.plist;
 				MARKETING_VERSION = 1.4;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ningfeng.HanziSprout;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ningfeng.HanziSprout.yaya;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
