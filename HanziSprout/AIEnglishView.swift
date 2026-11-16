@@ -47,8 +47,12 @@ struct AIEnglishView: View {
                     } label: { Label(speech.buttonTitle, systemImage: speech.isRecording ? "stop.circle.fill" : "mic.fill") }
                         .buttonStyle(CrayonButtonStyle(color: Crayon.yellow)).disabled(!enabled || model.loading)
                     Spacer(minLength: 0)
-                    Button("发送", action: submit).buttonStyle(CrayonButtonStyle(color: Crayon.green, ink: .white))
-                        .disabled(!enabled || busy || input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || input.count > 1000)
+                    TimelineView(.periodic(from: .now, by: 1)) { context in
+                        let wait = max(0, Int(ceil(model.nextAllowedAt?.timeIntervalSince(context.date) ?? 0)))
+                        Button(wait > 0 ? "等待 \(wait) 秒" : "发送", action: submit)
+                            .buttonStyle(CrayonButtonStyle(color: Crayon.green, ink: .white))
+                            .disabled(!enabled || busy || wait > 0 || input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || input.count > 1000)
+                    }
                 }
                 if speech.isRecording { Text("正在录音 \(speech.elapsedText) · 说完再点“说好了”").font(.callout).monospacedDigit() }
                 if speech.phase == .transcribing { HStack { ProgressView(); Text("正在离线听写…") } }
@@ -56,7 +60,7 @@ struct AIEnglishView: View {
                     HStack { ProgressView(); Text("正在翻译、检查表达…"); Spacer(); Button("取消") { model.cancel() } }
                 }
                 if let error = speech.error { Text(error).font(.callout).foregroundStyle(.red) }
-                if let error = model.error { Text(error).font(.callout).foregroundStyle(.red) }
+                if let error = model.error { Text(error).font(.callout).foregroundStyle(.red).textSelection(.enabled) }
             }.padding(18).crayonCard(Crayon.peach.opacity(0.6))
             ForEach(model.turns) { turn in answerCard(turn) }
             if !model.turns.isEmpty {
@@ -168,7 +172,7 @@ struct AIEnglishView: View {
         }
     }
     private func submit() {
-        guard enabled, !busy else { return }
+        guard enabled, !busy, model.canSend else { return }
         audio.clear()
         let task: TutorTask = conversation ? .conversation : (language == .toEnglish ? .chineseToEnglish : .englishToChinese)
         model.send(input, task: task, audience: audience, scene: scene)

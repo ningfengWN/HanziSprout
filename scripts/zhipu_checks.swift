@@ -42,3 +42,20 @@ expect(.malformed) { _ = try answer.validated(for: .conversation) }
 expect(.missingKey) { _ = try ZhipuClient.request(key:"bad\nkey", input:"hi", task:.conversation, audience:.child, scene:"在家", history:[]) }
 expect(.invalidInput) { _ = try ZhipuClient.request(key:"unit-test-placeholder", input:String(repeating:"a",count:1001), task:.conversation, audience:.child, scene:"在家", history:[]) }
 print("Zhipu free-model request contract, structured feedback, context boundaries and error handling passed; no live API called")
+
+func providerData(_ code: Any) throws -> Data {
+    try JSONSerialization.data(withJSONObject: ["error":["code":code,"message":"sensitive-provider-message-must-not-display"]])
+}
+for code in [1113, 1302, 1305, 1308, 1310, 1315] {
+    expect(.provider(status:429, code:code)) { _ = try ZhipuClient.decode(providerData(String(code)), status:429, task:.englishToChinese) }
+    expect(.provider(status:429, code:code)) { _ = try ZhipuClient.decode(providerData(code), status:429, task:.englishToChinese) }
+    let message = TutorError.provider(status:429, code:code).localizedDescription
+    assert(message.contains(String(code)) && !message.contains("sensitive-provider-message"))
+}
+assert(TutorError.provider(status:429, code:1305).cooldown == 20)
+assert(TutorError.provider(status:429, code:1113).cooldown == 0)
+assert(TutorError.provider(status:429, code:1315).cooldown == 0)
+assert(TutorError.provider(status:429, code:1113).localizedDescription.contains("账务"))
+assert(TutorError.provider(status:429, code:1315).localizedDescription.contains("产品类型"))
+expect(.rateLimited) { _ = try ZhipuClient.decode(providerData("secret-like-non-numeric-code"), status:429, task:.englishToChinese) }
+print("429 business-code distinctions, safe diagnostics and cooldown policy passed")
