@@ -15,14 +15,18 @@ final class TutorModel: ObservableObject {
     private var history: [TutorMessage] = []
     private var work: Task<Void, Never>?
     private var generation = 0
-    private let client = ZhipuClient()
+    private let zhipu = ZhipuClient()
+    private let openai = OpenAIClient()
 
-    func send(_ input: String, task: TutorTask, audience: TutorAudience, scene: String) {
+    func send(_ input: String, provider: AIProvider, task: TutorTask, audience: TutorAudience, scene: String) {
         guard canSend else { return }
         error = nil
         let key: String
         do {
-            guard let stored = try APIKeyStore.read(), !stored.isEmpty else { throw TutorError.missingKey }
+            guard let stored = try APIKeyStore.read(provider: provider), !stored.isEmpty else {
+                if provider == .openai { throw OpenAITutorError.missingKey }
+                throw TutorError.missingKey
+            }
             key = stored
         } catch { self.error = error.localizedDescription; return }
         let context = task == .conversation ? history : []
@@ -31,7 +35,11 @@ final class TutorModel: ObservableObject {
         work = Task { @MainActor [weak self] in
             do {
                 guard let self else { return }
-                let reply = try await self.client.answer(key: key, input: input, task: task, audience: audience, scene: scene, history: context)
+                let reply: TutorReply
+                switch provider {
+                case .zhipu: reply = try await self.zhipu.answer(key: key, input: input, task: task, audience: audience, scene: scene, history: context)
+                case .openai: reply = try await self.openai.answer(key: key, input: input, task: task, audience: audience, scene: scene, history: context)
+                }
                 guard !Task.isCancelled, self.generation == token else { return }
                 let turn = TutorTurn(input: input, answer: reply)
                 if task == .conversation {
@@ -50,11 +58,15 @@ final class TutorModel: ObservableObject {
                     self.error = known.localizedDescription
                     if known.cooldown > 0 { self.nextAllowedAt = Date().addingTimeInterval(known.cooldown) }
                 }
+                else if let known = error as? OpenAITutorError {
+                    self.error = known.localizedDescription
+                    if known.cooldown > 0 { self.nextAllowedAt = Date().addingTimeInterval(known.cooldown) }
+                }
                 else if let network = error as? URLError, network.code == .timedOut { self.error = "等待回答超时，请稍后重试。" }
                 else { self.error = "请求未完成，请检查网络后重试。离线功能仍可使用。" }
             }
         }
     }
     func cancel() { generation += 1; work?.cancel(); work = nil; loading = false }
-    func reset() { cancel(); error = nil; turns = []; history = [] }
+    func reset(clearCooldown: Bool = false) { cancel(); error = nil; turns = []; history = []; if clearCooldown { nextAllowedAt = nil } }
 }

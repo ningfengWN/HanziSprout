@@ -26,6 +26,9 @@
 		E11030640FCC0E9D6783BF78 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9727B9EED8ACD2EE46E136A0 /* ContentView.swift */; };
 		F369C6223F2FB0F3C55D369A /* ZhipuClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D27BA1F3F14B21A7A484B5 /* ZhipuClient.swift */; };
 		F8C94A0478C05A34C3FAEBF4 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACDD57C210C7859BF5986A8C /* RootView.swift */; };
+		C588FE8E13F99B7777A56D56 /* AIProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B3FF43F3655AD6A3EFD903E /* AIProvider.swift */; };
+		19AF00F03B4142DFEA917364 /* OpenAIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACB19707E2BAF830EA79A435 /* OpenAIClient.swift */; };
+		BAE7A316C831D34CC08A0F5C /* OpenAICreditsLinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723A0B3C7E260585E89FB7A /* OpenAICreditsLinks.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -49,6 +52,9 @@
 		D1290B1B4625911A7073D8FF /* TutorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorModel.swift; sourceTree = "<group>"; };
 		EF7D667ADCC0FF9AB0015757 /* WritingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WritingView.swift; sourceTree = "<group>"; };
 		FE2683FD76BFC62C0464E4D1 /* SpeechInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechInput.swift; sourceTree = "<group>"; };
+		3B3FF43F3655AD6A3EFD903E /* AIProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIProvider.swift; sourceTree = "<group>"; };
+		ACB19707E2BAF830EA79A435 /* OpenAIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIClient.swift; sourceTree = "<group>"; };
+		8723A0B3C7E260585E89FB7A /* OpenAICreditsLinks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAICreditsLinks.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,6 +71,9 @@
 		482182478A3ECD4745BEA917 /* HanziSprout */ = {
 			isa = PBXGroup;
 			children = (
+				8723A0B3C7E260585E89FB7A /* OpenAICreditsLinks.swift */,
+				ACB19707E2BAF830EA79A435 /* OpenAIClient.swift */,
+				3B3FF43F3655AD6A3EFD903E /* AIProvider.swift */,
 				6F432A4EBCB921A472909D9A /* AIEnglishView.swift */,
 				C250100CA5743B7F315CA308 /* AISettingsView.swift */,
 				CA4E6E7F15F5696DB1965E40 /* APIKeyStore.swift */,
@@ -190,6 +199,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BAE7A316C831D34CC08A0F5C /* OpenAICreditsLinks.swift in Sources */,
+				19AF00F03B4142DFEA917364 /* OpenAIClient.swift in Sources */,
+				C588FE8E13F99B7777A56D56 /* AIProvider.swift in Sources */,
 				7B4FBB143CD039E03346458A /* AIEnglishView.swift in Sources */,
 				D5F2C5710F40B48533B07724 /* AISettingsView.swift in Sources */,
 				7F0477F60B1A845A79B92DA4 /* APIKeyStore.swift in Sources */,
@@ -218,12 +230,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_TEAM = 63HR26Z9DJ;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = HanziSprout/Info.plist;
-				MARKETING_VERSION = 1.4.1;
+				MARKETING_VERSION = 1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ningfeng.HanziSprout.yaya;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -236,12 +248,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_TEAM = 63HR26Z9DJ;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = HanziSprout/Info.plist;
-				MARKETING_VERSION = 1.4.1;
+				MARKETING_VERSION = 1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ningfeng.HanziSprout.yaya;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

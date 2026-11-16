@@ -41,7 +41,7 @@ struct EnglishView: View {
                     if mode == .lookup { lookupCard; resultView; systemTranslation; quickScenes }
                     else if mode == .practice { practiceCard }
                     else { AIEnglishView() }
-                    Text(mode == .ai ? "AI 伙伴使用智谱模型提供翻译、文字纠错与对话，可能有误；发音仍需自己回听比较。" : "句库可直接用；其他句子可尝试系统离线翻译。离线纠错只覆盖内置例句；录音供自己回听，不评判发音对错。")
+                    Text(mode == .ai ? "AI 伙伴使用当前选定的模型提供翻译、文字纠错与对话，可能有误；发音仍需自己回听比较。" : "句库可直接用；其他句子可尝试系统离线翻译。离线纠错只覆盖内置例句；录音供自己回听，不评判发音对错。")
                         .font(.footnote).foregroundStyle(Crayon.ink.opacity(0.85))
                     if let error = audio.error { Text(error).font(.callout).foregroundStyle(.red) }
                 }.padding(20).padding(.bottom, 18).frame(maxWidth: 780).frame(maxWidth: .infinity)

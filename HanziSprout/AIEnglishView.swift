@@ -1,7 +1,9 @@
 import SwiftUI
 
 struct AIEnglishView: View {
-    @AppStorage("zhipuEnabled") private var enabled = false
+    @AppStorage("zhipuEnabled") private var zhipuEnabled = false
+    @AppStorage("openAIEnabled") private var openAIEnabled = false
+    @AppStorage("aiProvider") private var providerRaw = AIProvider.zhipu.rawValue
     @AppStorage("aiAutoRead") private var autoRead = true
     @AppStorage("aiAutoSend") private var autoSend = true
     @StateObject private var model = TutorModel()
@@ -15,6 +17,8 @@ struct AIEnglishView: View {
     @State private var settings = false
     @State private var awaitingTranscription = false
     @Environment(\.scenePhase) private var scenePhase
+    private var provider: AIProvider { AIProvider(rawValue: providerRaw) ?? .zhipu }
+    private var enabled: Bool { provider == .openai ? openAIEnabled : zhipuEnabled }
     private var busy: Bool { speech.isBusy || model.loading }
 
     var body: some View {
@@ -24,10 +28,14 @@ struct AIEnglishView: View {
                 Spacer()
                 Button("AI 设置") { settings = true }.foregroundStyle(Crayon.green).disabled(busy)
             }
+            Text("当前服务：\(provider.title) · \(provider.modelName)").font(.callout).foregroundStyle(Crayon.green)
+            if provider == .openai {
+                OpenAICreditsLinks().padding(16).crayonCard(Crayon.blue.opacity(0.6))
+            }
             if !enabled {
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("先保存你的智谱 API Key").font(.headline)
-                    Text("使用模型标准 API Key，固定调用 GLM-4.7-Flash。不开启也能使用其他页面的离线功能。")
+                    Text("先保存你的 \(provider.title) API Key").font(.headline)
+                    Text(provider == .openai ? "在 AI 设置中选择 OpenAI，保存 OpenAI Key 并启用；可在官网查询赠送额度。" : "使用智谱模型标准 API Key，固定调用 GLM-4.7-Flash。其他页面的离线功能仍可使用。")
                     Button("打开 AI 设置") { settings = true }.buttonStyle(CrayonButtonStyle())
                 }.padding(18).crayonCard(Crayon.yellow)
             }
@@ -60,7 +68,10 @@ struct AIEnglishView: View {
                     HStack { ProgressView(); Text("正在翻译、检查表达…"); Spacer(); Button("取消") { model.cancel() } }
                 }
                 if let error = speech.error { Text(error).font(.callout).foregroundStyle(.red) }
-                if let error = model.error { Text(error).font(.callout).foregroundStyle(.red).textSelection(.enabled) }
+                if let error = model.error {
+                    Text(error).font(.callout).foregroundStyle(.red).textSelection(.enabled)
+                    if provider == .openai { Link("查询 OpenAI 额度／到期时间", destination: OpenAIAccountLinks.billing).font(.callout) }
+                }
             }.padding(18).crayonCard(Crayon.peach.opacity(0.6))
             ForEach(model.turns) { turn in answerCard(turn) }
             if !model.turns.isEmpty {
@@ -70,7 +81,7 @@ struct AIEnglishView: View {
             VStack(alignment: .leading, spacing: 8) {
                 Toggle("说完并识别后自动发送", isOn: $autoSend).disabled(busy)
                 Toggle("自动朗读英文回答", isOn: $autoRead)
-                Text("发送内容：识别或输入的文字；对话模式另含本次最近 6 轮文字。录音不会上传到智谱。麦克风使用设备离线听写，不可用时可直接输入。")
+                Text("发送到 \(provider.title)：识别或输入的文字，对话模式另含最近 6 轮文字。不上传录音；麦克风使用设备离线听写，不可用时可直接输入。")
                     .font(.caption).foregroundStyle(Crayon.ink.opacity(0.85))
                 Text("AI 反馈仅供学习参考，可能有误；不根据转写文字评价发音。").font(.caption)
             }.foregroundStyle(Crayon.ink)
@@ -81,6 +92,7 @@ struct AIEnglishView: View {
         .onChange(of: conversation) { _ in resetSession() }
         .onChange(of: audience) { _ in resetSession() }
         .onChange(of: scene) { _ in resetSession() }
+        .onChange(of: providerRaw) { _ in stopSession(); model.reset(clearCooldown: true) }
         .onChange(of: enabled) { value in if !value { resetSession() } }
         .onChange(of: speech.transcript) { if !$0.isEmpty { input = $0 } }
         .onChange(of: speech.phase) { phase in
@@ -175,7 +187,7 @@ struct AIEnglishView: View {
         guard enabled, !busy, model.canSend else { return }
         audio.clear()
         let task: TutorTask = conversation ? .conversation : (language == .toEnglish ? .chineseToEnglish : .englishToChinese)
-        model.send(input, task: task, audience: audience, scene: scene)
+        model.send(input, provider: provider, task: task, audience: audience, scene: scene)
     }
     private func stopSession() {
         awaitingTranscription = false; speech.stop(); audio.clear(); model.cancel()

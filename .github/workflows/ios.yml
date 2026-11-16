@@ -27,6 +27,10 @@ jobs:
         run: |
           cat HanziSprout/ZhipuClient.swift scripts/zhipu_checks.swift > /tmp/zhipu_checks.swift
           swift /tmp/zhipu_checks.swift
+      - name: Test OpenAI Responses contract without live credentials
+        run: |
+          cat HanziSprout/AIProvider.swift HanziSprout/ZhipuClient.swift HanziSprout/OpenAIClient.swift scripts/openai_checks.swift > /tmp/openai_checks.swift
+          swift /tmp/openai_checks.swift
       - name: Build iPhone and iPad simulator app
         run: xcodebuild -project HanziSprout.xcodeproj -scheme HanziSprout -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath build CODE_SIGNING_ALLOWED=NO build
       - name: Check built bundle identity and resources
