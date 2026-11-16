@@ -8,10 +8,11 @@ struct TutorTurn: Identifiable {
 @MainActor
 final class TutorModel: ObservableObject {
     @Published private(set) var loading = false
+    @Published private(set) var quotaReached = false
     @Published private(set) var error: String?
     @Published private(set) var turns: [TutorTurn] = []
     @Published private(set) var nextAllowedAt: Date?
-    var canSend: Bool { !loading && (nextAllowedAt.map { $0 <= Date() } ?? true) }
+    var canSend: Bool { !quotaReached && !loading && (nextAllowedAt.map { $0 <= Date() } ?? true) }
     private var history: [TutorMessage] = []
     private var work: Task<Void, Never>?
     private var generation = 0
@@ -56,9 +57,11 @@ final class TutorModel: ObservableObject {
                 self.loading = false
                 if let known = error as? TutorError {
                     self.error = known.localizedDescription
+                    if case .provider(_, let code) = known { self.quotaReached = [1113, 1304, 1308, 1310].contains(code) || (1316...1321).contains(code) }
                     if known.cooldown > 0 { self.nextAllowedAt = Date().addingTimeInterval(known.cooldown) }
                 }
                 else if let known = error as? OpenAITutorError {
+                    self.quotaReached = known == .quota
                     self.error = known.localizedDescription
                     if known.cooldown > 0 { self.nextAllowedAt = Date().addingTimeInterval(known.cooldown) }
                 }
@@ -67,6 +70,7 @@ final class TutorModel: ObservableObject {
             }
         }
     }
+    func resumeAfterQuota() { quotaReached = false; error = nil }
     func cancel() { generation += 1; work?.cancel(); work = nil; loading = false }
-    func reset(clearCooldown: Bool = false) { cancel(); error = nil; turns = []; history = []; if clearCooldown { nextAllowedAt = nil } }
+    func reset(clearCooldown: Bool = false) { cancel(); if !quotaReached { error = nil }; turns = []; history = []; if clearCooldown { nextAllowedAt = nil; quotaReached = false; error = nil } }
 }

@@ -3,6 +3,7 @@ import SwiftUI
 struct ContentView: View {
     @StateObject private var speech = SpeechInput()
     @State private var question = ""
+    @FocusState private var questionFocused: Bool
     @State private var phrase = ""
     @State private var selected: Letter?
     @AppStorage("recentWords") private var recent = ""
@@ -19,11 +20,11 @@ struct ContentView: View {
                         if !phrase.isEmpty { results }
                         examples
                         if !recent.isEmpty { history }
-                        Text("字芽 1.5 · 把今天的小故事写下来")
+                        Text("字芽 1.5.1 · 把今天的小故事写下来")
                             .font(.system(.footnote, design: .rounded)).foregroundStyle(Crayon.ink.opacity(0.75))
                             .frame(maxWidth: .infinity).padding(.top, 6)
                     }.padding(20).padding(.bottom, 16).frame(maxWidth: 780).frame(maxWidth: .infinity)
-                }.scrollDismissesKeyboard(.interactively)
+                }.scrollDismissesKeyboard(.interactively).onTapGesture { questionFocused = false }
             }
             .toolbar(.hidden, for: .navigationBar)
             .fullScreenCover(item: $selected) { letter in WritingView(letter: letter) }
@@ -56,9 +57,10 @@ struct ContentView: View {
             .tint(Crayon.green).lineLimit(2...4).padding(16)
             .background(Color.white.opacity(0.95), in: RoundedRectangle(cornerRadius: 15))
             .overlay(RoundedRectangle(cornerRadius: 15).stroke(Crayon.ink.opacity(0.5), style: StrokeStyle(lineWidth: 1.5, dash: [6, 3])))
-            .disabled(speech.isBusy).submitLabel(.search).onSubmit(find)
+            .focused($questionFocused).disabled(speech.isBusy).submitLabel(.search).onSubmit(find)
+            if questionFocused { Button("收起键盘") { questionFocused = false }.font(.callout) }
             HStack(spacing: 10) {
-                Button(action: speech.toggle) {
+                Button { questionFocused = false; speech.toggle() } label: {
                     Label(speech.buttonTitle, systemImage: speech.isRecording ? "stop.circle.fill" : "mic.fill")
                         .frame(maxWidth: .infinity).fixedSize(horizontal: false, vertical: true)
                 }.buttonStyle(CrayonButtonStyle(color: speech.isRecording ? Crayon.pink : Crayon.yellow))
@@ -122,6 +124,7 @@ struct ContentView: View {
         }
     }
     private func find() {
+        questionFocused = false
         guard !speech.isBusy else { return }
         speech.stop()
         phrase = Question.phrase(question.trimmingCharacters(in: .whitespacesAndNewlines))

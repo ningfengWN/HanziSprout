@@ -51,11 +51,9 @@ struct AISettingsView: View {
                     if let error { Text(error).foregroundStyle(.red) }
                 }
                 if provider == .openai {
-                    Section { OpenAICreditsLinks() }
                     Section("创建 OpenAI Key") {
                         Link("打开 OpenAI API Keys", destination: OpenAIAccountLinks.keys)
                         Text("使用关联到赠送额度的 API 组织中的项目 Key。受限 Key 需要 Responses 写入权限；不要填智谱 Key。")
-                        Link("查看赠送额度的官方说明", destination: OpenAIAccountLinks.creditsGuide)
                         Link("查看 OpenAI 支持地区", destination: OpenAIAccountLinks.supportedRegions)
                     }.font(.callout)
                 } else {
@@ -64,6 +62,9 @@ struct AISettingsView: View {
                         Text("创建“模型标准 API”密钥；Coding Plan 个人、团队套餐 Key 不通用。")
                     }.font(.callout)
                 }
+                Section("额度与限制") {
+                    Text("App 不读取账户余额或预测到账时间。服务商返回额度不足或用量限制时，对话内会显示提示并暂停发送，失败的文字会保留。普通限流会显示等待时间。")
+                }.font(.callout)
                 Section("发送与保存") {
                     Text("点击发送，或开启自动发送后说完，识别出的文字会通过 HTTPS 发给当前选择的 \(provider.title)。不上传录音；对话模式附带当前会话最近 6 轮文字。切换服务商会清空本次对话上下文。")
                     Text("密钥分别存入本设备的系统钥匙串，不写入代码、UserDefaults 或对话记录。关闭或删除一家不会删除另一家的密钥。")

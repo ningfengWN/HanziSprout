@@ -10,7 +10,7 @@ bundle = info.get('CFBundleIdentifier', '')
 assert re.fullmatch(r'[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+', bundle), info
 project = (Path(__file__).resolve().parents[1]/'HanziSprout.xcodeproj/project.pbxproj').read_text()
 configured = re.findall(r'PRODUCT_BUNDLE_IDENTIFIER = "?([^;"\s]+)"?;', project)
-assert bundle in configured, f'Built bundle {bundle} differs from project configuration' 
+assert bundle in configured, f'Built bundle {bundle} differs from project configuration'
 assert info.get('CFBundlePackageType') == 'APPL', info
 assert info.get('CFBundleExecutable') and (app/info['CFBundleExecutable']).is_file(), info
 assert set(info.get('UIDeviceFamily', [])) == {1, 2}, info

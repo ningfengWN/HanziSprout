@@ -9,10 +9,6 @@ enum AIProvider: String, CaseIterable, Identifiable {
     var keychainService: String { "com.ningfeng.HanziSprout." + rawValue }
 }
 enum OpenAIAccountLinks {
-    static let billing = URL(string: "https://platform.openai.com/settings/organization/billing/overview")!
-    static let usage = URL(string: "https://platform.openai.com/usage")!
-    static let subscription = URL(string: "https://chatgpt.com/settings/billing")!
     static let keys = URL(string: "https://platform.openai.com/api-keys")!
-    static let creditsGuide = URL(string: "https://developers.openai.com/api/docs/guides/chatgpt-api-credits")!
     static let supportedRegions = URL(string: "https://developers.openai.com/api/docs/supported-countries")!
 }

@@ -11,7 +11,10 @@ struct AIEnglishView: View {
     @StateObject private var audio = EnglishAudio()
     @State private var input = ""
     @State private var language: EnglishDirection = .toEnglish
-    @State private var conversation = false
+    @State private var conversation = true
+    @State private var options = false
+    @State private var pendingInput = ""
+    @FocusState private var inputFocused: Bool
     @State private var audience: TutorAudience = .child
     @State private var scene = "去公园"
     @State private var settings = false
@@ -22,77 +25,74 @@ struct AIEnglishView: View {
     private var busy: Bool { speech.isBusy || model.loading }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 18) {
+        VStack(spacing: 0) {
             HStack {
-                Label("AI 英语伙伴", systemImage: "sparkles").font(.title3.bold())
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("芽芽 · 英语伙伴").font(.headline)
+                    Text("\(provider.title) · \(conversation ? scene : "翻译与纠错")").font(.caption).foregroundStyle(Crayon.green)
+                }
                 Spacer()
-                Button("AI 设置") { settings = true }.foregroundStyle(Crayon.green).disabled(busy)
+                Button { inputFocused = false; options = true } label: { Image(systemName: "slider.horizontal.3").padding(10) }.accessibilityLabel("对话选项")
+                Menu {
+                    Button("AI 接入设置") { inputFocused = false; settings = true }
+                    Button("新对话", role: .destructive) { resetSession(); input = "" }
+                } label: { Image(systemName: "ellipsis.circle").padding(10) }.accessibilityLabel("更多")
+            }.padding(.horizontal, 18).padding(.vertical, 10)
+            Divider()
+            ScrollViewReader { proxy in
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 22) {
+                        if model.turns.isEmpty && pendingInput.isEmpty { welcome }
+                        ForEach(model.turns) { turn in
+                            userBubble(turn.input)
+                            answerCard(turn)
+                        }
+                        if !pendingInput.isEmpty { userBubble(pendingInput) }
+                        if model.loading {
+                            HStack(spacing: 10) { ProgressView(); Text("伙伴正在想怎么说…").font(.callout); Button("停止") { model.cancel(); input = pendingInput; pendingInput = "" } }
+                        }
+                        if let error = model.error {
+                            VStack(alignment: .leading, spacing: 10) {
+                                Label(model.quotaReached ? "额度不足或已达到用量限制" : "这次没有发送成功", systemImage: "exclamationmark.triangle.fill").font(.headline)
+                                Text(error).font(.callout).textSelection(.enabled)
+                                if model.quotaReached {
+                                    Text("这句话已保留。当前服务已暂停发送；处理账户额度或限制后，点下方按钮再试。也可以到 AI 设置手动切换服务商。").font(.callout)
+                                    Button("已处理，恢复发送") { model.resumeAfterQuota(); input = pendingInput; pendingInput = "" }
+                                } else {
+                                    Button("放回输入框") { input = pendingInput; pendingInput = "" }
+                                }
+                            }.padding(16).crayonCard(Crayon.peach)
+                        }
+                        Color.clear.frame(height: 1).id("latest")
+                    }.padding(18).frame(maxWidth: 780).frame(maxWidth: .infinity)
+                }.scrollDismissesKeyboard(.interactively)
+                    .onTapGesture { inputFocused = false }
+                    .onChange(of: model.turns.last?.id) { _ in withAnimation { proxy.scrollTo("latest", anchor: .bottom) } }
+                    .onChange(of: model.loading) { _ in withAnimation { proxy.scrollTo("latest", anchor: .bottom) } }
+                    .onChange(of: inputFocused) { value in if value { withAnimation { proxy.scrollTo("latest", anchor: .bottom) } } }
             }
-            Text("当前服务：\(provider.title) · \(provider.modelName)").font(.callout).foregroundStyle(Crayon.green)
-            if provider == .openai {
-                OpenAICreditsLinks().padding(16).crayonCard(Crayon.blue.opacity(0.6))
-            }
-            if !enabled {
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("先保存你的 \(provider.title) API Key").font(.headline)
-                    Text(provider == .openai ? "在 AI 设置中选择 OpenAI，保存 OpenAI Key 并启用；可在官网查询赠送额度。" : "使用智谱模型标准 API Key，固定调用 GLM-4.7-Flash。其他页面的离线功能仍可使用。")
-                    Button("打开 AI 设置") { settings = true }.buttonStyle(CrayonButtonStyle())
-                }.padding(18).crayonCard(Crayon.yellow)
-            }
-            controls
-            VStack(alignment: .leading, spacing: 13) {
-                TextField(text: $input, axis: .vertical) {
-                    Text(language == .toEnglish ? "例如：我想再玩五分钟" : "For example: Yesterday I go to the park.").foregroundColor(Crayon.ink.opacity(0.6))
-                }.font(.system(size: 22, design: .rounded)).foregroundColor(Crayon.ink)
-                    .lineLimit(2...5).padding(15).background(.white, in: RoundedRectangle(cornerRadius: 15))
-                    .disabled(busy).submitLabel(.send).onSubmit(submit)
-                Text("\(input.count) / 1,000").font(.caption).foregroundStyle(input.count > 1000 ? .red : Crayon.ink)
-                HStack {
-                    Button {
-                        if !speech.isBusy { audio.clear() }
-                        if speech.phase == .transcribing { awaitingTranscription = false }
-                        speech.toggle()
-                    } label: { Label(speech.buttonTitle, systemImage: speech.isRecording ? "stop.circle.fill" : "mic.fill") }
-                        .buttonStyle(CrayonButtonStyle(color: Crayon.yellow)).disabled(!enabled || model.loading)
-                    Spacer(minLength: 0)
-                    TimelineView(.periodic(from: .now, by: 1)) { context in
-                        let wait = max(0, Int(ceil(model.nextAllowedAt?.timeIntervalSince(context.date) ?? 0)))
-                        Button(wait > 0 ? "等待 \(wait) 秒" : "发送", action: submit)
-                            .buttonStyle(CrayonButtonStyle(color: Crayon.green, ink: .white))
-                            .disabled(!enabled || busy || wait > 0 || input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || input.count > 1000)
+        }
+        .safeAreaInset(edge: .bottom, spacing: 0) { composer }
+        .sheet(isPresented: $options) {
+            NavigationStack {
+                Form {
+                    Section("练习方式") { controls }
+                    Section("语音") {
+                        Toggle("说完并识别后自动发送", isOn: $autoSend)
+                        Toggle("自动朗读英文回答", isOn: $autoRead)
                     }
-                }
-                if speech.isRecording { Text("正在录音 \(speech.elapsedText) · 说完再点“说好了”").font(.callout).monospacedDigit() }
-                if speech.phase == .transcribing { HStack { ProgressView(); Text("正在离线听写…") } }
-                if model.loading {
-                    HStack { ProgressView(); Text("正在翻译、检查表达…"); Spacer(); Button("取消") { model.cancel() } }
-                }
-                if let error = speech.error { Text(error).font(.callout).foregroundStyle(.red) }
-                if let error = model.error {
-                    Text(error).font(.callout).foregroundStyle(.red).textSelection(.enabled)
-                    if provider == .openai { Link("查询 OpenAI 额度／到期时间", destination: OpenAIAccountLinks.billing).font(.callout) }
-                }
-            }.padding(18).crayonCard(Crayon.peach.opacity(0.6))
-            ForEach(model.turns) { turn in answerCard(turn) }
-            if !model.turns.isEmpty {
-                Button("清空这次对话") { model.reset(); audio.clear(); input = "" }
-                    .buttonStyle(CrayonButtonStyle(color: .white)).disabled(busy)
-            }
-            VStack(alignment: .leading, spacing: 8) {
-                Toggle("说完并识别后自动发送", isOn: $autoSend).disabled(busy)
-                Toggle("自动朗读英文回答", isOn: $autoRead)
-                Text("发送到 \(provider.title)：识别或输入的文字，对话模式另含最近 6 轮文字。不上传录音；麦克风使用设备离线听写，不可用时可直接输入。")
-                    .font(.caption).foregroundStyle(Crayon.ink.opacity(0.85))
-                Text("AI 反馈仅供学习参考，可能有误；不根据转写文字评价发音。").font(.caption)
-            }.foregroundStyle(Crayon.ink)
-            if let error = audio.error { Text(error).font(.callout).foregroundStyle(.red) }
+                    Section {
+                        Text("识别或输入的文字发送到选中的服务商。对话附带最近 6 轮文字，录音不上传给模型。AI 可能误译或误判，文字纠错不等于发音评测。")
+                    }.font(.caption)
+                }.navigationTitle("对话选项").toolbar { ToolbarItem(placement: .confirmationAction) { Button("完成") { options = false } } }
+            }.preferredColorScheme(.light)
         }
         .sheet(isPresented: $settings) { AISettingsView() }
         .onChange(of: language) { value in resetSession(); speech.setLanguage(value.locale) }
         .onChange(of: conversation) { _ in resetSession() }
         .onChange(of: audience) { _ in resetSession() }
         .onChange(of: scene) { _ in resetSession() }
-        .onChange(of: providerRaw) { _ in stopSession(); model.reset(clearCooldown: true) }
+        .onChange(of: providerRaw) { _ in pendingInput = ""; stopSession(); model.reset(clearCooldown: true) }
         .onChange(of: enabled) { value in if !value { resetSession() } }
         .onChange(of: speech.transcript) { if !$0.isEmpty { input = $0 } }
         .onChange(of: speech.phase) { phase in
@@ -105,12 +105,71 @@ struct AIEnglishView: View {
             }
         }
         .onChange(of: model.turns.last?.id) { _ in
+            pendingInput = ""
             guard autoRead, !speech.isBusy, let answer = model.turns.last?.answer else { return }
             let text = conversation ? answer.replyEnglish : answer.english
             if !text.isEmpty { audio.speak(text) }
         }
         .onChange(of: scenePhase) { if $0 == .background { stopSession() } }
         .onDisappear { stopSession(); model.reset() }
+    }
+    private var welcome: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            Image(systemName: "bubble.left.and.bubble.right.fill").font(.system(size: 42)).foregroundStyle(Crayon.green)
+            Text("今天想聊什么？").font(.system(size: 28, weight: .bold, design: .rounded))
+            Text("用中文问怎么说，或用英文聊一聊。\n我会陪你接着说，也会帮你修改表达。").font(.body)
+            if !enabled {
+                Button("设置 \(provider.title) 并开始") { settings = true }.buttonStyle(CrayonButtonStyle())
+            } else {
+                ForEach(["我想去公园玩", "Hello! How are you?", "Yesterday I go to school."], id: \.self) { example in
+                    Button { input = example; inputFocused = true } label: {
+                        HStack { Text(example); Spacer(); Image(systemName: "arrow.up.left") }.padding(14).crayonCard(.white)
+                    }.buttonStyle(.plain)
+                }
+            }
+            Text("只保留本次会话最近 6 轮，不会自动切换服务商。").font(.caption).foregroundStyle(.secondary)
+        }.padding(.vertical, 25)
+    }
+    private func userBubble(_ text: String) -> some View {
+        HStack {
+            Spacer(minLength: 36)
+            Text(text).font(.system(size: 20, design: .rounded)).textSelection(.enabled)
+                .padding(15).background(Crayon.green, in: RoundedRectangle(cornerRadius: 20)).foregroundStyle(.white)
+        }
+    }
+    private var composer: some View {
+        VStack(alignment: .leading, spacing: 9) {
+            if inputFocused {
+                HStack { Spacer(); Button { inputFocused = false } label: { Label("收起键盘", systemImage: "keyboard.chevron.compact.down") }.font(.callout) }
+            }
+            if speech.isRecording { Text("正在录音 \(speech.elapsedText) · 说完点停止").font(.callout).monospacedDigit() }
+            if speech.phase == .transcribing { HStack { ProgressView(); Text("正在离线听写…").font(.callout) } }
+            if let error = speech.error { Text(error).font(.caption).foregroundStyle(.red) }
+            if let error = audio.error { Text(error).font(.caption).foregroundStyle(.red) }
+            HStack(alignment: .bottom, spacing: 10) {
+                Button {
+                    inputFocused = false
+                    if !speech.isBusy { audio.clear() }
+                    if speech.phase == .transcribing { awaitingTranscription = false }
+                    speech.toggle()
+                } label: { Image(systemName: speech.isBusy ? "stop.circle.fill" : "mic.fill").font(.title2).frame(width: 44, height: 46) }
+                    .disabled(!enabled || model.loading || model.quotaReached).accessibilityLabel(speech.buttonTitle)
+                TextField("说点什么，或输入一句话…", text: $input, axis: .vertical)
+                    .font(.system(size: 19, design: .rounded)).lineLimit(1...4).padding(12)
+                    .background(.white, in: RoundedRectangle(cornerRadius: 18)).focused($inputFocused)
+                    .disabled(busy).submitLabel(.send).onSubmit(submit)
+                    .accessibilityIdentifier("aiChatInput")
+                TimelineView(.periodic(from: .now, by: 1)) { context in
+                    let wait = max(0, Int(ceil(model.nextAllowedAt?.timeIntervalSince(context.date) ?? 0)))
+                    Button(action: submit) {
+                        if wait > 0 { Text("\(wait)").font(.callout.bold()).frame(width: 44, height: 46) }
+                        else { Image(systemName: "arrow.up.circle.fill").font(.system(size: 36)).frame(width: 44, height: 46) }
+                    }.disabled(!enabled || busy || model.quotaReached || wait > 0 || input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || input.count > 1000)
+                        .accessibilityLabel("发送")
+                }
+            }
+            if input.count > 900 { Text("\(input.count) / 1,000").font(.caption).foregroundStyle(input.count > 1000 ? .red : Crayon.ink) }
+        }.padding(.horizontal, 14).padding(.vertical, 10).background(Crayon.paper).overlay(alignment: .top) { Divider() }
     }
     private var controls: some View {
         VStack(spacing: 12) {
@@ -133,7 +192,6 @@ struct AIEnglishView: View {
     }
     private func answerCard(_ turn: TutorTurn) -> some View {
         VStack(alignment: .leading, spacing: 13) {
-            Text("我说：\(turn.input)").font(.callout).textSelection(.enabled)
             if conversation {
                 Label("伙伴回答", systemImage: "bubble.left.fill").font(.headline).foregroundStyle(Crayon.green)
                 Text(turn.answer.replyEnglish).font(.system(size: 27, weight: .bold, design: .rounded)).textSelection(.enabled)
@@ -185,12 +243,15 @@ struct AIEnglishView: View {
     }
     private func submit() {
         guard enabled, !busy, model.canSend else { return }
+        inputFocused = false
+        pendingInput = input.trimmingCharacters(in: .whitespacesAndNewlines)
         audio.clear()
         let task: TutorTask = conversation ? .conversation : (language == .toEnglish ? .chineseToEnglish : .englishToChinese)
-        model.send(input, provider: provider, task: task, audience: audience, scene: scene)
+        model.send(pendingInput, provider: provider, task: task, audience: audience, scene: scene)
+        input = ""
     }
     private func stopSession() {
         awaitingTranscription = false; speech.stop(); audio.clear(); model.cancel()
     }
-    private func resetSession() { stopSession(); model.reset() }
+    private func resetSession() { inputFocused = false; pendingInput = ""; stopSession(); model.reset() }
 }

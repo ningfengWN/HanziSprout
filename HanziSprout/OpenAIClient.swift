@@ -9,7 +9,7 @@ enum OpenAITutorError: Error, LocalizedError, Equatable {
         case .unauthorized: return "OpenAI 密钥无效、过期或已撤销。请在 AI 设置中重新保存有效的 OpenAI Key。"
         case .forbidden: return "OpenAI 拒绝访问。请核对 Key 的 Responses 写入权限，以及项目、模型和组织权限。"
         case .region: return "OpenAI 返回地区访问限制，请查看官方支持地区。仅有 API 额度不代表实际使用地区受到支持。"
-        case .quota: return "OpenAI 返回额度不足或用量限制。请点“查询 OpenAI 额度”，检查所选 API 组织的剩余额度、到期时间及项目限制；App 不会自动充值。"
+        case .quota: return "OpenAI 返回额度不足或用量限制。当前 API 组织可能额度不足、额度过期或达到项目用量限制。请处理账户后再试；App 不会自动充值。"
         case .rateLimited: return "OpenAI 请求达到速率限制，请等待后手动重试。不会自动换模型或切换到智谱。"
         case .unavailable: return "OpenAI 暂时未完成请求，请稍后重试；离线功能仍可使用。"
         case .modelUnavailable: return "当前 OpenAI 项目无法使用 GPT-6 Luna。请在平台核对该组织和项目的模型权限；不会自动切换其他模型。"

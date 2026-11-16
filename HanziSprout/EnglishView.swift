@@ -8,6 +8,7 @@ struct EnglishView: View {
     @State private var mode: Mode = .lookup
     @State private var direction: EnglishDirection = .toEnglish
     @State private var query = ""
+    @FocusState private var queryFocused: Bool
     @State private var result: EnglishCatalog.Result?
     @State private var lastLookupQuery = ""
     @State private var lastLookupDirection: EnglishDirection = .toEnglish
@@ -23,34 +24,29 @@ struct EnglishView: View {
     var body: some View {
         ZStack {
             PaperBackground()
-            ScrollView {
-                VStack(alignment: .leading, spacing: 22) {
-                    HStack {
-                        Image(systemName: "bubble.left.and.bubble.right.fill").font(.system(size: 33)).foregroundStyle(Crayon.green)
-                        VStack(alignment: .leading) {
+            VStack(spacing: 0) {
+                Picker("学习方式", selection: $mode) {
+                    ForEach(Mode.allCases, id: \.self) { Text($0.rawValue).tag($0) }
+                }.pickerStyle(.segmented).disabled(busy).padding(.horizontal, 18).padding(.vertical, 10)
+                if mode == .ai { AIEnglishView() }
+                else {
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 22) {
                             Text("芽芽英语").font(.system(size: 30, weight: .heavy, design: .rounded))
                             Text("听一句 · 跟着说 · 听听自己").font(.subheadline)
-                        }
-                        Spacer(minLength: 0)
-                    }
-                    Text("离线句库 \(catalog.phrases.count) 句 · AI 伙伴可选开启")
-                        .font(.callout).foregroundStyle(Crayon.green)
-                    Picker("学习方式", selection: $mode) {
-                        ForEach(Mode.allCases, id: \.self) { Text($0.rawValue).tag($0) }
-                    }.pickerStyle(.segmented).disabled(busy)
-                    if mode == .lookup { lookupCard; resultView; systemTranslation; quickScenes }
-                    else if mode == .practice { practiceCard }
-                    else { AIEnglishView() }
-                    Text(mode == .ai ? "AI 伙伴使用当前选定的模型提供翻译、文字纠错与对话，可能有误；发音仍需自己回听比较。" : "句库可直接用；其他句子可尝试系统离线翻译。离线纠错只覆盖内置例句；录音供自己回听，不评判发音对错。")
-                        .font(.footnote).foregroundStyle(Crayon.ink.opacity(0.85))
-                    if let error = audio.error { Text(error).font(.callout).foregroundStyle(.red) }
-                }.padding(20).padding(.bottom, 18).frame(maxWidth: 780).frame(maxWidth: .infinity)
-            }.scrollDismissesKeyboard(.interactively)
+                            if mode == .lookup { lookupCard; resultView; systemTranslation; quickScenes }
+                            else { practiceCard }
+                            Text("句库可直接用；离线纠错只覆盖内置例句，录音供自己回听。").font(.footnote)
+                            if let error = audio.error { Text(error).font(.callout).foregroundStyle(.red) }
+                        }.padding(20).frame(maxWidth: 780).frame(maxWidth: .infinity)
+                    }.scrollDismissesKeyboard(.interactively).onTapGesture { queryFocused = false }
+                }
+            }
         }.foregroundStyle(Crayon.ink).tint(Crayon.green).preferredColorScheme(.light)
         .onChange(of: speech.transcript) { if !$0.isEmpty { query = $0; result = nil } }
         .onChange(of: direction) { value in speech.setLanguage(value.locale); if value != lastLookupDirection { result = nil } }
         .onChange(of: query) { value in if value != lastLookupQuery { result = nil } }
-        .onChange(of: mode) { _ in speech.stop(); audio.clear() }
+        .onChange(of: mode) { _ in queryFocused = false; speech.stop(); audio.clear() }
         .onChange(of: scene) { _ in turn = 0; revealed = false; audio.clear() }
         .onChange(of: scenePhase) { if $0 == .background { speech.stop(); audio.clear() } }
         .onDisappear { speech.stop(); audio.clear() }
@@ -65,9 +61,10 @@ struct EnglishView: View {
             }.font(.system(size: 22, design: .rounded)).foregroundColor(Crayon.ink)
                 .lineLimit(2...4).padding(16).background(.white, in: RoundedRectangle(cornerRadius: 15))
                 .disabled(busy).submitLabel(.search).onSubmit(lookup)
-                .accessibilityIdentifier("englishQuery")
+                .accessibilityIdentifier("englishQuery").focused($queryFocused)
+            if queryFocused { Button("收起键盘") { queryFocused = false }.font(.callout) }
             HStack {
-                Button { if !speech.isBusy { audio.clear() }; speech.toggle() } label: {
+                Button { queryFocused = false; if !speech.isBusy { audio.clear() }; speech.toggle() } label: {
                     Label(speech.buttonTitle, systemImage: speech.isRecording ? "stop.circle.fill" : "mic.fill")
                 }.buttonStyle(CrayonButtonStyle(color: Crayon.yellow)).disabled(audio.isRecording || audio.preparing)
                 Spacer(minLength: 0)
@@ -200,6 +197,7 @@ struct EnglishView: View {
     }
     private func lookup() {
         guard !busy else { return }
+        queryFocused = false
         audio.clear()
         lastLookupQuery = query; lastLookupDirection = direction
         result = catalog.lookup(query, direction: direction)
