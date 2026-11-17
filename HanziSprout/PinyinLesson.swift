@@ -98,7 +98,7 @@ enum PinyinLesson {
         return item.initial + " → " + final(for: item.pinyin) + " → " + item.pinyin
     }
     static let catalog: [PinyinExercise] = catalogRows.split(separator: "\n").compactMap { row in
-        let parts = row.split(separator: "|")
+        let parts = row.trimmingCharacters(in: .whitespacesAndNewlines).split(separator: "|")
         guard parts.count == 2 else { return nil }
         let py = String(parts[0])
         return PinyinExercise(id: "syllable-" + py, pinyin: py, word: String(parts[1]), initial: initial(for: py), hint: "先听示范，再读一次完整音节，注意声调。")
