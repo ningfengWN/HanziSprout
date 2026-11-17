@@ -29,6 +29,7 @@ struct PinyinPracticeView: View {
                 ScrollView {
                     VStack(spacing: 20) {
                         Text("每天一点，读得更清楚").font(.headline)
+                        PinyinSoundSettings()
                         NavigationLink("词语跟读与录音回放") { PinyinWordPracticeView() }
                             .buttonStyle(CrayonButtonStyle(color: Crayon.blue))
                         Picker("专项", selection: $group) {
@@ -82,8 +83,10 @@ struct PinyinPracticeView: View {
                 Text(PinyinLesson.spellingLabel(for: item)).font(.headline)
             }
             if mode != 0 {
-                Button { play(item) } label: { Label("听示范", systemImage: "speaker.wave.2.fill") }
+                Button { play(item) } label: { Label("拆分示范", systemImage: "speaker.wave.2.fill") }
                     .buttonStyle(CrayonButtonStyle(color: Crayon.blue)).disabled(speech.isBusy)
+                Button("自然合读") { play(item, wholeOnly: true) }
+                    .buttonStyle(.bordered).disabled(speech.isBusy)
             }
             if mode == 2 {
                 Text(PinyinLesson.explanation(for: item)).font(.headline)
@@ -139,21 +142,72 @@ struct PinyinPracticeView: View {
         if !reviewOnly || !correctAnswer { index += 1 }
         feedback = nil; answered = false; correctAnswer = false
     }
-    private func play(_ item: PinyinExercise) {
+    private func play(_ item: PinyinExercise, wholeOnly: Bool = false) {
         do {
             let session = AVAudioSession.sharedInstance()
             try session.setCategory(.playback, mode: .spokenAudio)
             try session.setActive(true)
             speaker.stopSpeaking(at: .immediate)
-            for text in PinyinLesson.demonstration(for: item) {
+            let sequence = wholeOnly ? [item.word] : PinyinLesson.demonstration(for: item)
+            for (index, text) in sequence.enumerated() {
                 let utterance = AVSpeechUtterance(string: text)
-                utterance.voice = AVSpeechSynthesisVoice(language: "zh-CN")
-                utterance.rate = 0.38
-                utterance.postUtteranceDelay = 0.45
+                PinyinSound.configure(utterance, last: index == sequence.count - 1)
                 speaker.speak(utterance)
             }
         } catch { answered = false; correctAnswer = false; feedback = "示范声音暂时不可用，请重试。" }
     }
     private func cancelAudio() { autoAdvance?.cancel(); autoAdvance = nil; awaitingSpeech = false; speech.stop(); speaker.stopSpeaking(at: .immediate) }
     private func reset() { cancelAudio(); index = 0; feedback = nil; answered = false; correctAnswer = false }
+}
+
+/// Shared settings for both single-syllable and word practice.
+enum PinyinSound {
+    static func voices() -> [AVSpeechSynthesisVoice] {
+        AVSpeechSynthesisVoice.speechVoices().filter { $0.language == "zh-CN" }.sorted {
+            if $0.quality.rawValue != $1.quality.rawValue { return $0.quality.rawValue > $1.quality.rawValue }
+            return $0.identifier < $1.identifier
+        }
+    }
+    static func voice() -> AVSpeechSynthesisVoice? {
+        let available = voices()
+        let selected = UserDefaults.standard.string(forKey: "pinyin.voice.identifier") ?? ""
+        return available.first(where: { $0.identifier == selected }) ?? available.first ?? AVSpeechSynthesisVoice(language: "zh-CN")
+    }
+    static func configure(_ utterance: AVSpeechUtterance, last: Bool) {
+        utterance.voice = voice()
+        let rate = UserDefaults.standard.double(forKey: "pinyin.voice.rate")
+        utterance.rate = rate == 0 ? 0.46 : Float(min(0.50, max(0.40, rate)))
+        utterance.pitchMultiplier = 1.0
+        utterance.volume = 1.0
+        utterance.postUtteranceDelay = last ? 0 : 0.22
+    }
+}
+
+private struct PinyinSoundSettings: View {
+    @AppStorage("pinyin.voice.identifier") private var identifier = ""
+    @AppStorage("pinyin.voice.rate") private var rate = 0.46
+    @State private var available: [AVSpeechSynthesisVoice] = []
+    @Environment(\.scenePhase) private var scenePhase
+    var body: some View {
+        DisclosureGroup("示范声音与语速") {
+            VStack(alignment: .leading, spacing: 10) {
+                Picker("普通话声音", selection: $identifier) {
+                    Text("自动选择最佳音质").tag("")
+                    ForEach(available, id: \.identifier) { voice in
+                        Text(voice.name + (voice.quality.rawValue > 1 ? " · 高质量" : " · 基础")).tag(voice.identifier)
+                    }
+                }
+                Picker("语速", selection: $rate) {
+                    Text("自然").tag(0.46)
+                    Text("稍慢").tag(0.42)
+                }.pickerStyle(.segmented)
+                Text("当前：" + (PinyinSound.voice()?.name ?? "系统默认普通话"))
+                    .font(.caption)
+                Text("可在 iPhone/iPad 设置 → 辅助功能 → 朗读与语音（或朗读内容）→ 声音 → 中文，下载普通话增强语音。下载后返回此页即可选用。拆分音仍是系统合成；自然合读通常更连贯。")
+                    .font(.caption).foregroundStyle(.secondary)
+            }.padding(.top, 8)
+        }
+        .onAppear { available = PinyinSound.voices() }
+        .onChange(of: scenePhase) { if $0 == .active { available = PinyinSound.voices() } }
+    }
 }

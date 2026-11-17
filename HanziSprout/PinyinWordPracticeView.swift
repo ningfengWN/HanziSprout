@@ -71,11 +71,9 @@ private final class PinyinVoiceCoach: NSObject, ObservableObject {
                 } + [word]
             }
         }
-        for text in sequence {
+        for (index, text) in sequence.enumerated() {
             let utterance = AVSpeechUtterance(string: text)
-            utterance.voice = AVSpeechSynthesisVoice(language: "zh-CN")
-            utterance.rate = 0.38
-            utterance.postUtteranceDelay = 0.45
+            PinyinSound.configure(utterance, last: index == sequence.count - 1)
             synth.speak(utterance)
         }
     }
