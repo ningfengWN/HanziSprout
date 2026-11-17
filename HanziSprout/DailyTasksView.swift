@@ -32,103 +32,146 @@ struct DailyTasksView: View {
     @State private var selectedDate = Date()
     @State private var followsToday = true
     @State private var newTitle = ""
+    @State private var editingTime: DailyTaskItem?
+    @State private var minuteText = ""
     @FocusState private var titleFocused: Bool
-
+    @FocusState private var minutesFocused: Bool
+    private let clock = Timer.publish(every: 30, on: .main, in: .common).autoconnect()
     private var book: DailyTaskBook { (try? JSONDecoder().decode(DailyTaskBook.self, from: stored)) ?? DailyTaskBook() }
     private var items: [DailyTaskItem] { book.items(on: selectedDate) }
     private var completed: Int { items.filter(\.completed).count }
-    private let clock = Timer.publish(every: 30, on: .main, in: .common).autoconnect()
 
     var body: some View {
         NavigationStack {
             ZStack {
                 PaperBackground()
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 20) {
-                        dateHeader
-                        progressCard
-                        VStack(spacing: 12) {
-                            ForEach(items) { item in taskRow(item) }
-                        }
-                        addTaskCard
-                        Text("固定任务每天自动生成；临时任务仅加入选中的日期。打勾与用时分别记录，用时可留空。记录保存在本机。")
-                            .font(.footnote).foregroundStyle(.secondary)
-                    }.padding().frame(maxWidth: 760).frame(maxWidth: .infinity)
-                }.scrollDismissesKeyboard(.interactively)
-            }.foregroundStyle(Crayon.ink)
-                .navigationTitle("每日任务")
-                .toolbar { ToolbarItemGroup(placement: .keyboard) { Spacer(); Button("收起键盘") { titleFocused = false } } }
+                ViewThatFits(in: .vertical) {
+                    checklist
+                    ScrollView { checklist }
+                }.padding(.horizontal, 16)
+            }
+            .foregroundStyle(Crayon.ink)
+            .navigationTitle("每日任务")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar { ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("完成") { titleFocused = false; minutesFocused = false }
+            } }
+            .sheet(item: $editingTime) { item in timeEditor(item) }
         }
         .onReceive(clock) { _ in refreshToday() }
         .onChange(of: scenePhase) { if $0 == .active { refreshToday() } }
     }
-
-    private var dateHeader: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            DatePicker("任务日期", selection: Binding(get: { selectedDate }, set: {
-                selectedDate = $0; followsToday = Calendar.current.isDateInToday($0)
-            }), displayedComponents: .date)
+    private var checklist: some View {
+        VStack(spacing: 10) {
+            dateHeader
             HStack {
-                Button("前一天") { moveDay(-1) }
+                Text("已完成 \(completed)/\(items.count) 项").font(.subheadline.bold())
                 Spacer()
-                Button("今天") { selectedDate = Date(); followsToday = true }
-                Spacer()
-                Button("后一天") { moveDay(1) }
-            }.buttonStyle(.bordered)
-        }
+                Text("用时 \(items.compactMap(\.minutes).reduce(0, +)) 分钟").font(.caption)
+            }
+            VStack(spacing: 0) {
+                ForEach(items) { item in
+                    taskRow(item)
+                    if item.id != items.last?.id { Divider().padding(.horizontal, 12) }
+                }
+            }.crayonCard(.white)
+            HStack(spacing: 8) {
+                TextField("添加临时任务", text: $newTitle)
+                    .textFieldStyle(.roundedBorder).focused($titleFocused)
+                    .submitLabel(.done).onSubmit(addTask)
+                Button("添加", action: addTask).buttonStyle(.borderedProminent).tint(Crayon.green)
+                    .disabled(newTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            }
+            Text("点方框打勾 · 点右侧填写用时（可不填）").font(.caption).foregroundStyle(.secondary)
+        }.padding(.vertical, 8).frame(maxWidth: 700).frame(maxWidth: .infinity)
     }
-    private var progressCard: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text(completed == items.count ? "今天的任务都完成啦！" : "一步一步完成今天的小目标")
-                .font(.headline)
-            ProgressView(value: Double(completed), total: Double(max(1, items.count))).tint(Crayon.green)
-            Text("已完成 \(completed) / \(items.count) 项 · 已记录用时 \(items.compactMap(\.minutes).reduce(0, +)) 分钟")
-                .font(.subheadline)
-        }.padding(18).crayonCard(Crayon.yellow)
+    private var dateHeader: some View {
+        HStack(spacing: 10) {
+            Button { moveDay(-1) } label: { Image(systemName: "chevron.left").frame(width: 32, height: 40) }
+                .accessibilityLabel("前一天")
+            DatePicker("日期", selection: Binding(get: { selectedDate }, set: {
+                selectedDate = $0; followsToday = Calendar.current.isDateInToday($0)
+            }), displayedComponents: .date).labelsHidden()
+            Button { moveDay(1) } label: { Image(systemName: "chevron.right").frame(width: 32, height: 40) }
+                .accessibilityLabel("后一天")
+            Spacer(minLength: 0)
+            Button("今天") { selectedDate = Date(); followsToday = true }
+        }.buttonStyle(.plain)
     }
     private func taskRow(_ item: DailyTaskItem) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 12) {
-                Button { update(item.id) { $0.completed.toggle() } } label: {
-                    Image(systemName: item.completed ? "checkmark.circle.fill" : "circle")
-                        .font(.system(size: 30)).foregroundStyle(Crayon.green)
-                        .frame(width: 44, height: 44)
-                }.buttonStyle(.plain)
-                    .accessibilityLabel("\(item.title)，\(item.completed ? "已完成，点击取消" : "未完成，点击打勾")")
-                Text(item.title).font(.title3.bold()).strikethrough(item.completed)
-                Spacer()
-                if item.custom {
-                    Button(role: .destructive) { delete(item.id) } label: { Image(systemName: "trash") }
-                        .accessibilityLabel("删除临时任务\(item.title)")
+        HStack(spacing: 8) {
+            Button {
+                titleFocused = false
+                update(item.id) { $0.completed.toggle() }
+            } label: {
+                HStack(spacing: 12) {
+                    Image(systemName: item.completed ? "checkmark.square.fill" : "square")
+                        .font(.system(size: 26)).foregroundStyle(Crayon.green)
+                    Text(item.title).font(.body.weight(.medium)).strikethrough(item.completed)
+                        .foregroundStyle(Crayon.ink).lineLimit(1)
+                    Spacer(minLength: 0)
+                }.frame(minHeight: 44).contentShape(Rectangle())
+            }.buttonStyle(.plain)
+                .accessibilityLabel("\(item.title)，\(item.completed ? "已完成" : "未完成")，点击切换")
+            Button {
+                titleFocused = false
+                minuteText = item.minutes.map(String.init) ?? ""
+                editingTime = item
+            } label: {
+                Text(item.minutes.map { "\($0)分钟" } ?? "用时")
+                    .font(.subheadline).foregroundStyle(Crayon.green).frame(minWidth: 48, minHeight: 44)
+            }.buttonStyle(.plain).accessibilityLabel("\(item.title)用时")
+            if item.custom {
+                Button(role: .destructive) { save(items.filter { $0.id != item.id }) } label: {
+                    Image(systemName: "minus.circle").frame(width: 30, height: 44)
+                }.buttonStyle(.plain).accessibilityLabel("删除\(item.title)")
+            }
+        }.padding(.horizontal, 12)
+    }
+    private func timeEditor(_ item: DailyTaskItem) -> some View {
+        NavigationStack {
+            Form {
+                Section("\(item.title) · 用时") {
+                    TextField("分钟数，可留空", text: $minuteText)
+                        .keyboardType(.numberPad).focused($minutesFocused)
+                    Text("填写 0–1440 分钟；留空表示不记录用时。")
+                        .font(.caption).foregroundStyle(.secondary)
+                }
+                Section {
+                    Button("完成并保存") { saveTime(item) }.disabled(!validMinutes)
+                    Button("不记录用时") { minuteText = ""; saveTime(item) }
                 }
             }
-            Toggle("记录用时", isOn: Binding(get: { item.minutes != nil }, set: { enabled in
-                update(item.id) { $0.minutes = enabled ? 0 : nil }
-            })).font(.subheadline)
-            if let minutes = item.minutes {
-                Stepper("用时 \(minutes) 分钟", value: Binding(get: { minutes }, set: { value in
-                    update(item.id) { $0.minutes = value }
-                }), in: 0...1440, step: 5)
-                TextField("输入分钟数", text: Binding(get: { String(minutes) }, set: { value in
-                    guard let number = Int(value), (0...1440).contains(number) else { return }
-                    update(item.id) { $0.minutes = number }
-                })).keyboardType(.numberPad).textFieldStyle(.roundedBorder)
-                    .accessibilityLabel("\(item.title)用时，分钟")
+            .scrollDismissesKeyboard(.interactively)
+            .navigationTitle("记录用时").navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("取消") { minutesFocused = false; editingTime = nil }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("完成") { saveTime(item) }.disabled(!validMinutes)
+                }
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("收起键盘") { minutesFocused = false }
+                }
             }
-        }.padding(16).crayonCard(item.completed ? Crayon.blue : .white)
+        }.presentationDetents([.medium, .large])
     }
-    private var addTaskCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("临时任务").font(.headline)
-            TextField("输入今天临时增加的任务", text: $newTitle).focused($titleFocused)
-                .textFieldStyle(.roundedBorder).submitLabel(.done).onSubmit(addTask)
-            Button("添加任务", action: addTask).buttonStyle(CrayonButtonStyle())
-                .disabled(newTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-        }.padding(18).crayonCard(Crayon.peach)
+    private var validMinutes: Bool {
+        let text = minuteText.trimmingCharacters(in: .whitespacesAndNewlines)
+        return text.isEmpty || Int(text).map { (0...1440).contains($0) } == true
     }
-    private func save(_ items: [DailyTaskItem]) {
+    private func saveTime(_ item: DailyTaskItem) {
+        guard validMinutes else { return }
+        let text = minuteText.trimmingCharacters(in: .whitespacesAndNewlines)
+        update(item.id) { $0.minutes = text.isEmpty ? nil : Int(text) }
+        minutesFocused = false; editingTime = nil
+    }
+    private func save(_ values: [DailyTaskItem]) {
         var next = book
-        next.days[DailyTaskBook.dayKey(selectedDate)] = items
+        next.days[DailyTaskBook.dayKey(selectedDate)] = values
         if let encoded = try? JSONEncoder().encode(next) { stored = encoded }
     }
     private func update(_ id: String, change: (inout DailyTaskItem) -> Void) {
@@ -136,17 +179,17 @@ struct DailyTasksView: View {
         guard let index = next.firstIndex(where: { $0.id == id }) else { return }
         change(&next[index]); save(next)
     }
-    private func delete(_ id: String) { save(items.filter { $0.id != id || !$0.custom }) }
     private func addTask() {
         let title = newTitle.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !title.isEmpty else { return }
+        guard !title.isEmpty else { titleFocused = false; return }
         var next = items
         next.append(DailyTaskItem(id: UUID().uuidString, title: title, custom: true))
         save(next); newTitle = ""; titleFocused = false
     }
     private func moveDay(_ delta: Int) {
         guard let date = Calendar.current.date(byAdding: .day, value: delta, to: selectedDate) else { return }
-        selectedDate = date; followsToday = Calendar.current.isDateInToday(date)
+        titleFocused = false; selectedDate = date
+        followsToday = Calendar.current.isDateInToday(date)
     }
     private func refreshToday() {
         if followsToday && !Calendar.current.isDateInToday(selectedDate) { selectedDate = Date() }
