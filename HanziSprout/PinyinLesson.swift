@@ -108,7 +108,7 @@ enum PinyinLesson {
         let parts = row.split(separator: "|")
         guard parts.count == 2 else { return nil }
         let py = String(parts[0])
-        return PinyinExercise(id: py, pinyin: py, word: String(parts[1]), initial: initial(for: py), hint: "先听示范，再读一次完整音节，注意声调。")
+        return PinyinExercise(id: "syllable-" + py, pinyin: py, word: String(parts[1]), initial: initial(for: py), hint: "先听示范，再读一次完整音节，注意声调。")
     }
     static let catalogRows = """
         biàn|变
