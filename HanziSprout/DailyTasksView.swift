@@ -7,6 +7,25 @@ struct DailyTaskItem: Codable, Identifiable {
     var completed = false
     var minutes: Int? = nil
     var custom = false
+    var startedAt: Date? = nil
+    var recordedSeconds: Int? = nil
+
+    var savedSeconds: Int { max(0, recordedSeconds ?? ((minutes ?? 0) * 60)) }
+    func seconds(at date: Date) -> Int {
+        let elapsed = startedAt.map { max(0, Int(date.timeIntervalSince($0))) } ?? 0
+        return savedSeconds + elapsed
+    }
+    func durationText(at date: Date) -> String {
+        let total = seconds(at: date)
+        return String(format: "%d:%02d", total / 60, total % 60)
+    }
+    mutating func toggleTimer(at date: Date) {
+        if startedAt != nil {
+            recordedSeconds = seconds(at: date)
+            minutes = savedSeconds / 60
+            startedAt = nil
+        } else { startedAt = date }
+    }
 }
 
 struct DailyTaskBook: Codable {
@@ -68,7 +87,7 @@ struct DailyTasksView: View {
             HStack {
                 Text("已完成 \(completed)/\(items.count) 项").font(.subheadline.bold())
                 Spacer()
-                Text("用时 \(items.compactMap(\.minutes).reduce(0, +)) 分钟").font(.caption)
+                Text("已记录 \(items.reduce(0) { $0 + $1.savedSeconds } / 60) 分钟").font(.caption)
             }
             VStack(spacing: 0) {
                 ForEach(items) { item in
@@ -83,7 +102,7 @@ struct DailyTasksView: View {
                 Button("添加", action: addTask).buttonStyle(.borderedProminent).tint(Crayon.green)
                     .disabled(newTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             }
-            Text("点方框打勾 · 点右侧填写用时（可不填）").font(.caption).foregroundStyle(.secondary)
+            Text("点开始计时，结束后自动累计用时；点用时可手动修改。").font(.caption).foregroundStyle(.secondary)
         }.padding(.vertical, 8).frame(maxWidth: 700).frame(maxWidth: .infinity)
     }
     private var dateHeader: some View {
@@ -108,20 +127,33 @@ struct DailyTasksView: View {
                 HStack(spacing: 12) {
                     Image(systemName: item.completed ? "checkmark.square.fill" : "square")
                         .font(.system(size: 26)).foregroundStyle(Crayon.green)
-                    Text(item.title).font(.body.weight(.medium)).strikethrough(item.completed)
-                        .foregroundStyle(Crayon.ink).lineLimit(1)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(item.title).font(.body.weight(.medium)).strikethrough(item.completed)
+                            .foregroundStyle(Crayon.ink).lineLimit(1)
+                        if item.startedAt != nil {
+                            TimelineView(.periodic(from: .now, by: 1)) { context in
+                                Text("计时中 " + item.durationText(at: context.date))
+                                    .font(.caption).monospacedDigit().foregroundStyle(Crayon.green)
+                            }
+                        }
+                    }
                     Spacer(minLength: 0)
                 }.frame(minHeight: 44).contentShape(Rectangle())
             }.buttonStyle(.plain)
                 .accessibilityLabel("\(item.title)，\(item.completed ? "已完成" : "未完成")，点击切换")
+            Button(item.startedAt == nil ? "开始" : "结束") {
+                titleFocused = false
+                update(item.id) { $0.toggleTimer(at: Date()) }
+            }.buttonStyle(.bordered).tint(item.startedAt == nil ? Crayon.green : .red)
+                .accessibilityLabel("\(item.title)\(item.startedAt == nil ? "开始计时" : "结束计时")")
             Button {
                 titleFocused = false
                 minuteText = item.minutes.map(String.init) ?? ""
                 editingTime = item
             } label: {
-                Text(item.minutes.map { "\($0)分钟" } ?? "用时")
+                Text(item.recordedSeconds != nil ? item.durationText(at: item.startedAt ?? Date()) : (item.minutes.map { "\($0)分钟" } ?? "用时"))
                     .font(.subheadline).foregroundStyle(Crayon.green).frame(minWidth: 48, minHeight: 44)
-            }.buttonStyle(.plain).accessibilityLabel("\(item.title)用时")
+            }.buttonStyle(.plain).disabled(item.startedAt != nil).accessibilityLabel("\(item.title)用时，计时结束后可修改")
             if item.custom {
                 Button(role: .destructive) { save(items.filter { $0.id != item.id }) } label: {
                     Image(systemName: "minus.circle").frame(width: 30, height: 44)
@@ -166,7 +198,10 @@ struct DailyTasksView: View {
     private func saveTime(_ item: DailyTaskItem) {
         guard validMinutes else { return }
         let text = minuteText.trimmingCharacters(in: .whitespacesAndNewlines)
-        update(item.id) { $0.minutes = text.isEmpty ? nil : Int(text) }
+        update(item.id) {
+            $0.minutes = text.isEmpty ? nil : Int(text)
+            $0.recordedSeconds = text.isEmpty ? nil : (Int(text) ?? 0) * 60
+        }
         minutesFocused = false; editingTime = nil
     }
     private func save(_ values: [DailyTaskItem]) {
