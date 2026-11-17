@@ -1,5 +1,7 @@
 import SwiftUI
 import Combine
+import AudioToolbox
+import UserNotifications
 
 struct DailyTaskItem: Codable, Identifiable {
     var id: String
@@ -7,6 +9,7 @@ struct DailyTaskItem: Codable, Identifiable {
     var completed = false
     var minutes: Int? = nil
     var custom = false
+    var isArithmetic: Bool { id == "fixed-6" }
     var startedAt: Date? = nil
     var recordedSeconds: Int? = nil
 
@@ -52,11 +55,13 @@ struct DailyTasksView: View {
     @State private var followsToday = true
     @State private var newTitle = ""
     @State private var editingTime: DailyTaskItem?
+    @State private var countdownAlert = false
+    @State private var notificationHint = ""
     @State private var pendingUncheck: DailyTaskItem?
     @State private var minuteText = ""
     @FocusState private var titleFocused: Bool
     @FocusState private var minutesFocused: Bool
-    private let clock = Timer.publish(every: 30, on: .main, in: .common).autoconnect()
+    private let clock = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     private var book: DailyTaskBook { (try? JSONDecoder().decode(DailyTaskBook.self, from: stored)) ?? DailyTaskBook() }
     private var items: [DailyTaskItem] { book.items(on: selectedDate) }
     private var completed: Int { items.filter(\.completed).count }
@@ -89,10 +94,13 @@ struct DailyTasksView: View {
             } message: { item in
                 Text("确定取消“\(item.title)”的完成勾选吗？已记录的用时会保留。")
             }
+            .alert("口算时间到", isPresented: $countdownAlert) {
+                Button("知道了", role: .cancel) { }
+            } message: { Text("5 分钟口算练习已结束，用时已保存。完成情况请自行打勾。") }
             .sheet(item: $editingTime) { item in timeEditor(item) }
         }
-        .onReceive(clock) { _ in refreshToday() }
-        .onChange(of: scenePhase) { if $0 == .active { refreshToday() } }
+        .onReceive(clock) { _ in refreshToday(); finishExpiredCountdowns() }
+        .onChange(of: scenePhase) { if $0 == .active { refreshToday(); finishExpiredCountdowns() } }
     }
     private var checklist: some View {
         VStack(spacing: 10) {
@@ -115,7 +123,8 @@ struct DailyTasksView: View {
                 Button("添加", action: addTask).buttonStyle(.borderedProminent).tint(Crayon.green)
                     .disabled(newTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             }
-            Text("点开始计时，结束后自动累计用时；点用时可手动修改。").font(.caption).foregroundStyle(.secondary)
+            Text("口算练习倒计时5分钟；每日完成情况与用时自动保存，可切换日期查看。").font(.caption).foregroundStyle(.secondary)
+            if !notificationHint.isEmpty { Text(notificationHint).font(.caption).foregroundStyle(.secondary) }
         }.padding(.vertical, 8).frame(maxWidth: 700).frame(maxWidth: .infinity)
     }
     private var dateHeader: some View {
@@ -146,7 +155,7 @@ struct DailyTasksView: View {
                             .foregroundStyle(Crayon.ink).lineLimit(1)
                         if item.startedAt != nil {
                             TimelineView(.periodic(from: .now, by: 1)) { context in
-                                Text("计时中 " + item.durationText(at: context.date))
+                                Text(item.isArithmetic ? "剩余 " + countdownText(item, now: context.date) : "计时中 " + item.durationText(at: context.date))
                                     .font(.caption).monospacedDigit().foregroundStyle(Crayon.green)
                             }
                         }
@@ -156,9 +165,9 @@ struct DailyTasksView: View {
             }.buttonStyle(.plain)
                 .accessibilityLabel("\(item.title)，\(item.completed ? "已完成" : "未完成")，点击切换")
             HStack(spacing: 18) {
-            Button(item.startedAt == nil ? "开始" : "结束") {
+            Button(item.startedAt == nil ? (item.isArithmetic ? "开始5分钟" : "开始") : "结束") {
                 titleFocused = false
-                update(item.id) { $0.toggleTimer(at: Date()) }
+                toggleTaskTimer(item)
             }.frame(minWidth: 64, minHeight: 44).buttonStyle(.bordered).tint(item.startedAt == nil ? Crayon.green : .red)
                 .accessibilityLabel("\(item.title)\(item.startedAt == nil ? "开始计时" : "结束计时")")
             Button {
@@ -177,6 +186,74 @@ struct DailyTasksView: View {
             }
             }.padding(.leading, 38)
         }.padding(.horizontal, 12).padding(.vertical, 8)
+    }
+    private func countdownText(_ item: DailyTaskItem, now: Date) -> String {
+        guard let start = item.startedAt else { return "05:00" }
+        let seconds = max(0, Int(ceil(300 - now.timeIntervalSince(start))))
+        return String(format: "%02d:%02d", seconds / 60, seconds % 60)
+    }
+    private func alarmID(day: String, id: String) -> String { "daily-countdown-" + day + "-" + id }
+    private func toggleTaskTimer(_ item: DailyTaskItem) {
+        let now = Date()
+        let day = DailyTaskBook.dayKey(selectedDate)
+        let alarm = alarmID(day: day, id: item.id)
+        if item.isArithmetic, item.startedAt == nil {
+            update(item.id) { $0.recordedSeconds = 0; $0.minutes = 0; $0.startedAt = now }
+            scheduleAlarm(day: day, item: item, start: now)
+        } else {
+            update(item.id) { task in
+                task.toggleTimer(at: now)
+                if task.isArithmetic {
+                    task.recordedSeconds = min(300, task.savedSeconds)
+                    task.minutes = task.savedSeconds / 60
+                }
+            }
+            if item.isArithmetic { UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [alarm]) }
+        }
+    }
+    private func scheduleAlarm(day: String, item: DailyTaskItem, start: Date) {
+        let center = UNUserNotificationCenter.current()
+        center.requestAuthorization(options: [.alert, .sound]) { allowed, _ in
+            Task { @MainActor in
+                guard allowed else {
+                    notificationHint = "未开启通知：前台仍会响铃，锁屏或退出后的提醒需要允许通知。"
+                    return
+                }
+                guard book.days[day]?.first(where: { $0.id == item.id })?.startedAt == start else { return }
+                let remaining = start.addingTimeInterval(300).timeIntervalSinceNow
+                guard remaining > 0 else { return }
+                let content = UNMutableNotificationContent()
+                content.title = "口算时间到"
+                content.body = "5分钟口算练习已结束，回来记录完成情况吧。"
+                content.sound = .default
+                let request = UNNotificationRequest(identifier: alarmID(day: day, id: item.id), content: content,
+                    trigger: UNTimeIntervalNotificationTrigger(timeInterval: max(1, remaining), repeats: false))
+                center.add(request) { error in
+                    if error != nil { Task { @MainActor in notificationHint = "后台提醒未能设置，请保持页面在前台使用响铃。" } }
+                }
+            }
+        }
+    }
+    private func finishExpiredCountdowns() {
+        guard scenePhase == .active else { return }
+        let now = Date()
+        var next = book
+        var expired = false
+        for day in Array(next.days.keys) {
+            guard var tasks = next.days[day] else { continue }
+            for index in tasks.indices {
+                guard tasks[index].isArithmetic, let start = tasks[index].startedAt,
+                      now.timeIntervalSince(start) >= 300 else { continue }
+                tasks[index].recordedSeconds = 300; tasks[index].minutes = 5; tasks[index].startedAt = nil
+                UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [alarmID(day: day, id: tasks[index].id)])
+                expired = true
+            }
+            next.days[day] = tasks
+        }
+        guard expired, let encoded = try? JSONEncoder().encode(next) else { return }
+        stored = encoded
+        AudioServicesPlayAlertSound(1005)
+        countdownAlert = true
     }
     private func timeEditor(_ item: DailyTaskItem) -> some View {
         NavigationStack {
