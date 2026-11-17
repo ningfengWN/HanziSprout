@@ -52,6 +52,7 @@ struct DailyTasksView: View {
     @State private var followsToday = true
     @State private var newTitle = ""
     @State private var editingTime: DailyTaskItem?
+    @State private var pendingUncheck: DailyTaskItem?
     @State private var minuteText = ""
     @FocusState private var titleFocused: Bool
     @FocusState private var minutesFocused: Bool
@@ -76,6 +77,18 @@ struct DailyTasksView: View {
                 Spacer()
                 Button("完成") { titleFocused = false; minutesFocused = false }
             } }
+            .alert("取消完成状态？", isPresented: Binding(
+                get: { pendingUncheck != nil },
+                set: { if !$0 { pendingUncheck = nil } }
+            ), presenting: pendingUncheck) { item in
+                Button("保留完成", role: .cancel) { pendingUncheck = nil }
+                Button("确认取消", role: .destructive) {
+                    update(item.id) { $0.completed = false }
+                    pendingUncheck = nil
+                }
+            } message: { item in
+                Text("确定取消“\(item.title)”的完成勾选吗？已记录的用时会保留。")
+            }
             .sheet(item: $editingTime) { item in timeEditor(item) }
         }
         .onReceive(clock) { _ in refreshToday() }
@@ -119,10 +132,11 @@ struct DailyTasksView: View {
         }.buttonStyle(.plain)
     }
     private func taskRow(_ item: DailyTaskItem) -> some View {
-        HStack(spacing: 8) {
+        VStack(alignment: .leading, spacing: 8) {
             Button {
                 titleFocused = false
-                update(item.id) { $0.completed.toggle() }
+                if item.completed { pendingUncheck = item }
+                else { update(item.id) { $0.completed = true } }
             } label: {
                 HStack(spacing: 12) {
                     Image(systemName: item.completed ? "checkmark.square.fill" : "square")
@@ -141,10 +155,11 @@ struct DailyTasksView: View {
                 }.frame(minHeight: 44).contentShape(Rectangle())
             }.buttonStyle(.plain)
                 .accessibilityLabel("\(item.title)，\(item.completed ? "已完成" : "未完成")，点击切换")
+            HStack(spacing: 18) {
             Button(item.startedAt == nil ? "开始" : "结束") {
                 titleFocused = false
                 update(item.id) { $0.toggleTimer(at: Date()) }
-            }.buttonStyle(.bordered).tint(item.startedAt == nil ? Crayon.green : .red)
+            }.frame(minWidth: 64, minHeight: 44).buttonStyle(.bordered).tint(item.startedAt == nil ? Crayon.green : .red)
                 .accessibilityLabel("\(item.title)\(item.startedAt == nil ? "开始计时" : "结束计时")")
             Button {
                 titleFocused = false
@@ -154,12 +169,14 @@ struct DailyTasksView: View {
                 Text(item.recordedSeconds != nil ? item.durationText(at: item.startedAt ?? Date()) : (item.minutes.map { "\($0)分钟" } ?? "用时"))
                     .font(.subheadline).foregroundStyle(Crayon.green).frame(minWidth: 48, minHeight: 44)
             }.buttonStyle(.plain).disabled(item.startedAt != nil).accessibilityLabel("\(item.title)用时，计时结束后可修改")
+            Spacer(minLength: 0)
             if item.custom {
                 Button(role: .destructive) { save(items.filter { $0.id != item.id }) } label: {
                     Image(systemName: "minus.circle").frame(width: 30, height: 44)
                 }.buttonStyle(.plain).accessibilityLabel("删除\(item.title)")
             }
-        }.padding(.horizontal, 12)
+            }.padding(.leading, 38)
+        }.padding(.horizontal, 12).padding(.vertical, 8)
     }
     private func timeEditor(_ item: DailyTaskItem) -> some View {
         NavigationStack {
