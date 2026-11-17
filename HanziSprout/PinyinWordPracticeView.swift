@@ -225,6 +225,7 @@ struct PinyinWordPracticeView: View {
     @State private var mode = 0
     @State private var answer: String?
     @State private var parentFeedback: String?
+    @State private var autoAdvance: Task<Void, Never>?
 
     private let blue = Crayon.green
     private let yellow = Crayon.yellow
@@ -329,8 +330,14 @@ struct PinyinWordPracticeView: View {
                 .padding(.bottom, 6)
             }
         }
-        .onDisappear { coach.reset() }
-        .onChange(of: scenePhase) { if $0 == .background { coach.reset() } }
+        .onDisappear { resetQuestion() }
+        .onChange(of: scenePhase) { if $0 == .background { resetQuestion() } }
+        .onChange(of: coach.recognizing) { recognizing in
+            guard !recognizing, coach.message == "识别完成。请结合录音听辨，自动识别不等于发音评分。", !coach.recognized.isEmpty else { return }
+            if coach.recognized.filter({ !$0.isWhitespace && !$0.isPunctuation }) == card.word {
+                scheduleNextQuestion()
+            }
+        }
         .foregroundStyle(Crayon.ink)
     }
 
@@ -360,7 +367,7 @@ struct PinyinWordPracticeView: View {
                     Button {
                         guard answer == nil else { return }
                         answer = option
-                        if option == card.initial { visualCorrect += 1 }
+                        if option == card.initial { visualCorrect += 1; scheduleNextQuestion() }
                     } label: {
                         Text(option)
                             .font(.system(size: 44, weight: .bold, design: .rounded))
@@ -416,6 +423,7 @@ struct PinyinWordPracticeView: View {
                     coach.stopAndRecognize()
                     voicePractices += 1
                 } else {
+                    autoAdvance?.cancel(); autoAdvance = nil
                     coach.start()
                 }
             } label: {
@@ -459,8 +467,8 @@ struct PinyinWordPracticeView: View {
                     .foregroundStyle(.secondary)
             }
             HStack(spacing: 10) {
-                Button("家长确认：读对了") { parentFeedback = "⭐ 太棒了！" }
-                Button("再练一次") { parentFeedback = "听示范，慢慢读，不着急。" }
+                Button("家长确认：读对了") { parentFeedback = "⭐ 太棒了！"; scheduleNextQuestion() }
+                Button("再练一次") { autoAdvance?.cancel(); autoAdvance = nil; parentFeedback = "听示范，慢慢读，不着急。" }
             }
             .buttonStyle(.bordered)
             .font(.caption)
@@ -478,7 +486,18 @@ struct PinyinWordPracticeView: View {
         .frame(maxWidth: .infinity)
     }
 
+    private func scheduleNextQuestion() {
+        autoAdvance?.cancel()
+        autoAdvance = Task { @MainActor in
+            do { try await Task.sleep(nanoseconds: 800_000_000) } catch { return }
+            guard !Task.isCancelled else { return }
+            index = (index + 1) % cards.count
+            resetQuestion()
+        }
+    }
+
     private func resetQuestion() {
+        autoAdvance?.cancel(); autoAdvance = nil
         coach.reset()
         answer = nil
         parentFeedback = nil

@@ -13,6 +13,7 @@ struct PinyinPracticeView: View {
     @State private var answered = false
     @State private var correctAnswer = false
     @State private var awaitingSpeech = false
+    @State private var autoAdvance: Task<Void, Never>?
     @AppStorage("pinyin.mistakes.v1") private var mistakes = ""
     @AppStorage("pinyin.completed.v1") private var completed = 0
 
@@ -88,7 +89,7 @@ struct PinyinPracticeView: View {
                     speaker.stopSpeaking(at: .immediate)
                     if speech.phase == .recording { awaitingSpeech = true }
                     else if speech.phase != .idle { awaitingSpeech = false }
-                    else { feedback = nil; answered = false }
+                    else { autoAdvance?.cancel(); autoAdvance = nil; feedback = nil; answered = false; correctAnswer = false }
                     speech.toggle()
                 } label: {
                     Label(speech.buttonTitle, systemImage: speech.isRecording ? "stop.circle.fill" : "mic.fill")
@@ -108,21 +109,31 @@ struct PinyinPracticeView: View {
             if let feedback {
                 Text(feedback).font(.headline).accessibilityAddTraits(.isStaticText)
                 Text(item.hint).font(.body)
-                Button("下一题") {
-                    // Preserve review pool while showing feedback; remove solved
-                    // items only when leaving the question.
-                    if answered && correctAnswer {
-                        var ids = wrongIDs; ids.remove(item.id); mistakes = ids.sorted().joined(separator: ",")
-                    }
-                    if !reviewOnly || !correctAnswer { index += 1 }; self.feedback = nil; answered = false; cancelAudio()
-                }.buttonStyle(CrayonButtonStyle(color: Crayon.blue))
+                Button("下一题") { nextQuestion(item) }
+                    .buttonStyle(CrayonButtonStyle(color: Crayon.blue))
             }
         }.padding(22).frame(maxWidth: .infinity).crayonCard(.white)
     }
     private func record(_ correct: Bool, exercise: PinyinExercise, message: String) {
         guard !answered else { return }
         answered = true; correctAnswer = correct; completed += 1; feedback = message
+        if correct {
+            autoAdvance?.cancel()
+            autoAdvance = Task { @MainActor in
+                do { try await Task.sleep(nanoseconds: 800_000_000) } catch { return }
+                guard !Task.isCancelled, answered, correctAnswer else { return }
+                nextQuestion(exercise)
+            }
+        }
         if !correct { var ids = wrongIDs; ids.insert(exercise.id); mistakes = ids.sorted().joined(separator: ",") }
+    }
+    private func nextQuestion(_ item: PinyinExercise) {
+        cancelAudio()
+        if answered && correctAnswer {
+            var ids = wrongIDs; ids.remove(item.id); mistakes = ids.sorted().joined(separator: ",")
+        }
+        if !reviewOnly || !correctAnswer { index += 1 }
+        feedback = nil; answered = false; correctAnswer = false
     }
     private func play(_ item: PinyinExercise) {
         do {
@@ -136,6 +147,6 @@ struct PinyinPracticeView: View {
             speaker.speak(utterance)
         } catch { answered = false; correctAnswer = false; feedback = "示范声音暂时不可用，请重试。" }
     }
-    private func cancelAudio() { awaitingSpeech = false; speech.stop(); speaker.stopSpeaking(at: .immediate) }
+    private func cancelAudio() { autoAdvance?.cancel(); autoAdvance = nil; awaitingSpeech = false; speech.stop(); speaker.stopSpeaking(at: .immediate) }
     private func reset() { cancelAudio(); index = 0; feedback = nil; answered = false; correctAnswer = false }
 }
