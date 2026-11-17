@@ -56,14 +56,28 @@ private final class PinyinVoiceCoach: NSObject, ObservableObject {
         FileManager.default.temporaryDirectory.appendingPathComponent("hanzisprout_pinyin_latest.m4a")
     }
 
-    func demonstrate(_ word: String) {
+    func demonstrate(_ word: String, spelling: Bool = false) {
         if recording { return }
         player?.stop()
         synth.stopSpeaking(at: .immediate)
-        let utterance = AVSpeechUtterance(string: word)
-        utterance.voice = AVSpeechSynthesisVoice(language: "zh-CN")
-        utterance.rate = 0.42
-        synth.speak(utterance)
+        var sequence = [word]
+        if spelling {
+            let latin = word.applyingTransform(.mandarinToLatin, reverse: false) ?? ""
+            let syllables = latin.split(separator: " ").map(String.init)
+            let characters = word.map(String.init)
+            if syllables.count == characters.count {
+                sequence = zip(syllables, characters).flatMap { py, character in
+                    PinyinLesson.demonstration(for: PinyinExercise(id: py, pinyin: py, word: character, initial: PinyinLesson.initial(for: py), hint: ""))
+                } + [word]
+            }
+        }
+        for text in sequence {
+            let utterance = AVSpeechUtterance(string: text)
+            utterance.voice = AVSpeechSynthesisVoice(language: "zh-CN")
+            utterance.rate = 0.38
+            utterance.postUtteranceDelay = 0.45
+            synth.speak(utterance)
+        }
     }
 
     func start() {
@@ -222,7 +236,6 @@ struct PinyinWordPracticeView: View {
     @AppStorage("wt.pinyin.voicePractices") private var voicePractices = 0
     @State private var group = 0
     @State private var index = 0
-    @State private var mode = 0
     @State private var answer: String?
     @State private var parentFeedback: String?
     @State private var autoAdvance: Task<Void, Never>?
@@ -250,7 +263,7 @@ struct PinyinWordPracticeView: View {
                         Text("字芽 · 拼音小勇士")
                             .font(.title2.bold())
                             .foregroundStyle(.white)
-                        Text("看清字母 · 听清发音 · 勇敢开口")
+                        Text("听清发音 · 勇敢开口")
                             .font(.caption)
                             .foregroundStyle(.white.opacity(0.85))
                     }
@@ -269,18 +282,12 @@ struct PinyinWordPracticeView: View {
                 .padding(.horizontal, 12)
 
                 VStack(spacing: 10) {
-                    Picker("练习模式", selection: $mode) {
-                        Text("认字形").tag(0)
-                        Text("听音跟读").tag(1)
-                    }
-                    .pickerStyle(.segmented)
-                    .onChange(of: mode) { _ in resetQuestion() }
 
                     HStack {
                         Text("第 \(index + 1) / \(cards.count) 题")
                             .font(.subheadline.bold())
                         Spacer()
-                        Text("已认对 \(visualCorrect) · 跟读 \(voicePractices)")
+                        Text("已跟读 \(voicePractices) 次")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
@@ -293,11 +300,7 @@ struct PinyinWordPracticeView: View {
                                 .minimumScaleFactor(0.6)
                                 .accessibilityLabel("目标声母 \(card.initial)")
 
-                            if mode == 0 {
-                                visualSection
-                            } else {
-                                voiceSection
-                            }
+                            voiceSection
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 6)
@@ -358,41 +361,6 @@ struct PinyinWordPracticeView: View {
         .buttonStyle(.plain)
     }
 
-    private var visualSection: some View {
-        VStack(spacing: 14) {
-            Text("请找到和上面一样的字母")
-                .font(.headline)
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                ForEach(choices, id: \.self) { option in
-                    Button {
-                        guard answer == nil else { return }
-                        answer = option
-                        if option == card.initial { visualCorrect += 1; scheduleNextQuestion() }
-                    } label: {
-                        Text(option)
-                            .font(.system(size: 44, weight: .bold, design: .rounded))
-                            .frame(maxWidth: .infinity, minHeight: 75)
-                            .foregroundStyle(blue)
-                            .background(answer == option
-                                        ? (option == card.initial ? Crayon.blue : Crayon.peach)
-                                        : Crayon.paper,
-                                        in: RoundedRectangle(cornerRadius: 16))
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-            if let answer {
-                Text(answer == card.initial ? "⭐ 找对啦！" : "再看一看字母的圆肚子和竖线方向。")
-                    .font(.subheadline.bold())
-                    .foregroundStyle(answer == card.initial ? .green : .orange)
-            }
-            Text(card.hint)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-        }
-    }
-
     private var voiceSection: some View {
         VStack(spacing: 12) {
             Text(card.pinyin)
@@ -401,9 +369,9 @@ struct PinyinWordPracticeView: View {
             Text(card.word)
                 .font(.system(size: 32, weight: .semibold))
             Button {
-                coach.demonstrate(card.word)
+                coach.demonstrate(card.word, spelling: true)
             } label: {
-                Label("听标准示范", systemImage: "speaker.wave.2.fill")
+                Label("听拆分拼读示范", systemImage: "speaker.wave.2.fill")
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.bordered)

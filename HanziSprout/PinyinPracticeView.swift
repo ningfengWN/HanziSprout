@@ -6,7 +6,7 @@ struct PinyinPracticeView: View {
     @StateObject private var speech = SpeechInput()
     @State private var speaker = AVSpeechSynthesizer()
     @State private var group = 0
-    @State private var mode = 0
+    @State private var mode = 1
     @State private var index = 0
     @State private var reviewOnly = false
     @State private var feedback: String?
@@ -33,20 +33,19 @@ struct PinyinPracticeView: View {
                             .buttonStyle(CrayonButtonStyle(color: Crayon.blue))
                         Picker("专项", selection: $group) {
                             ForEach(0..<PinyinLesson.groups.count, id: \.self) { Text(PinyinLesson.groups[$0]).tag($0) }
-                        }.pickerStyle(.segmented)
+                        }.pickerStyle(.menu)
                         Picker("练习方式", selection: $mode) {
-                            Text("认声母").tag(0)
                             Text("听音选").tag(1)
                             Text("我来读").tag(2)
                         }.pickerStyle(.segmented)
                         Toggle("只练错题（\(wrongIDs.count)）", isOn: $reviewOnly)
-                        Text("已完成 \(completed) 次练习").font(.subheadline)
+                        Text("本组 \(pool.count) 个带调音节 · 已完成 \(completed) 次练习").font(.subheadline)
                         if !pool.isEmpty {
                             lesson(pool[index % pool.count])
                         } else {
                             Text("这一组还没有错题，关闭“只练错题”开始吧！").padding().crayonCard(Crayon.blue)
                         }
-                        Text("朗读核对使用系统中文语音识别，可能需要网络并由 Apple 处理录音。它只能辅助核对音节，不能专业评测口型或发音；孤立声母容易误识别，所以朗读练习使用完整音节。结果不确定时请家长复核。")
+                        Text("拆分示范使用系统合成语音和声母呼读音，非真人本音录音。整体认读直接读整音节；三拼音节依次读声母、介音、韵母后合读。朗读核对使用系统中文语音识别，可能需要网络并由 Apple 处理录音。它只能辅助核对音节，不能专业评测口型或发音；孤立声母容易误识别，所以朗读练习使用完整音节。结果不确定时请家长复核。")
                             .font(.footnote).fixedSize(horizontal: false, vertical: true)
                     }.padding().frame(maxWidth: 700).frame(maxWidth: .infinity)
                 }
@@ -71,19 +70,23 @@ struct PinyinPracticeView: View {
 
     @ViewBuilder private func lesson(_ item: PinyinExercise) -> some View {
         VStack(spacing: 18) {
-            Text(mode == 0 ? "找到相同的声母" : mode == 1 ? "先听示范，再选择拼音" : "看拼音，读完整音节")
+            Text(mode == 1 ? "先听示范，再选择拼音" : "看拼音，读完整音节")
             if mode != 1 || answered {
-                Text(mode == 0 ? item.initial : item.pinyin)
+                Text(item.pinyin)
                     .font(.system(size: 76, weight: .bold, design: .rounded))
-                    .minimumScaleFactor(0.6).accessibilityLabel(mode == 0 ? "声母 \(item.initial)" : item.pinyin)
+                    .minimumScaleFactor(0.6).accessibilityLabel(item.pinyin)
             } else {
                 Image(systemName: "ear.badge.waveform").font(.system(size: 64)).accessibilityLabel("听音选拼音")
+            }
+            if mode == 2 || answered {
+                Text(PinyinLesson.spellingLabel(for: item)).font(.headline)
             }
             if mode != 0 {
                 Button { play(item) } label: { Label("听示范", systemImage: "speaker.wave.2.fill") }
                     .buttonStyle(CrayonButtonStyle(color: Crayon.blue)).disabled(speech.isBusy)
             }
             if mode == 2 {
+                Text(PinyinLesson.explanation(for: item)).font(.headline)
                 Text("例如“\(item.word)”的读音。录音时只读一次音节。").font(.subheadline)
                 Button {
                     speaker.stopSpeaking(at: .immediate)
@@ -98,10 +101,10 @@ struct PinyinPracticeView: View {
                 if let error = speech.error { Text(error).font(.subheadline) }
             } else {
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 110))], spacing: 14) {
-                    ForEach(PinyinLesson.items(group: group)) { option in
-                        Button(mode == 0 ? option.initial : option.pinyin) {
+                    ForEach(PinyinLesson.choices(for: item, group: group)) { option in
+                        Button(option.pinyin) {
                             let match = option.id == item.id
-                            record(match, exercise: item, message: match ? "选对啦！" : "再看一看：正确的是 \(mode == 0 ? item.initial : item.pinyin)。")
+                            record(match, exercise: item, message: match ? "选对啦！" : "再看一看：正确的是 \(item.pinyin)。")
                         }.buttonStyle(CrayonButtonStyle()).disabled(answered)
                     }
                 }
@@ -109,6 +112,7 @@ struct PinyinPracticeView: View {
             if let feedback {
                 Text(feedback).font(.headline).accessibilityAddTraits(.isStaticText)
                 Text(item.hint).font(.body)
+                Text(PinyinLesson.explanation(for: item)).font(.headline)
                 Button("下一题") { nextQuestion(item) }
                     .buttonStyle(CrayonButtonStyle(color: Crayon.blue))
             }
@@ -141,10 +145,13 @@ struct PinyinPracticeView: View {
             try session.setCategory(.playback, mode: .spokenAudio)
             try session.setActive(true)
             speaker.stopSpeaking(at: .immediate)
-            let utterance = AVSpeechUtterance(string: item.word)
-            utterance.voice = AVSpeechSynthesisVoice(language: "zh-CN")
-            utterance.rate = 0.38
-            speaker.speak(utterance)
+            for text in PinyinLesson.demonstration(for: item) {
+                let utterance = AVSpeechUtterance(string: text)
+                utterance.voice = AVSpeechSynthesisVoice(language: "zh-CN")
+                utterance.rate = 0.38
+                utterance.postUtteranceDelay = 0.45
+                speaker.speak(utterance)
+            }
         } catch { answered = false; correctAnswer = false; feedback = "示范声音暂时不可用，请重试。" }
     }
     private func cancelAudio() { autoAdvance?.cancel(); autoAdvance = nil; awaitingSpeech = false; speech.stop(); speaker.stopSpeaking(at: .immediate) }
