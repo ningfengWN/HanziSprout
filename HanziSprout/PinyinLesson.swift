@@ -74,13 +74,6 @@ enum PinyinLesson {
         let suffix = finalSounds[final] == nil ? "；此韵母暂无独立示范音，以完整音节示范。" : ""
         return "\(item.initial) → \(final) → \(item.pinyin)\(suffix)"
     }
-    /// Teaching call sounds use Chinese speech, never English letter names.
-    /// Whole-reading and zero-initial syllables are not artificially split.
-    static func demonstration(for item: PinyinExercise) -> [String] {
-        guard !whole.contains(plain(item.pinyin)), !item.initial.isEmpty,
-              let initial = initialSounds[item.initial], let final = finalSounds[final(for: item.pinyin)] else { return [item.word] }
-        return [initial, final, item.word]
-    }
     static let wholeSyllables: Set<String> = ["zhi", "chi", "shi", "ri", "zi", "ci", "si", "yi", "wu", "yu", "ye", "yue", "yin", "yun", "yuan", "ying"]
     static func demonstration(for item: PinyinExercise) -> [String] {
         let base = plain(item.pinyin)
