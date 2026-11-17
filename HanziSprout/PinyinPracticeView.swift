@@ -1,0 +1,139 @@
+import SwiftUI
+import AVFoundation
+
+struct PinyinPracticeView: View {
+    @Environment(\.scenePhase) private var scenePhase
+    @StateObject private var speech = SpeechInput()
+    @State private var speaker = AVSpeechSynthesizer()
+    @State private var group = 0
+    @State private var mode = 0
+    @State private var index = 0
+    @State private var reviewOnly = false
+    @State private var feedback: String?
+    @State private var answered = false
+    @State private var correctAnswer = false
+    @State private var awaitingSpeech = false
+    @AppStorage("pinyin.mistakes.v1") private var mistakes = ""
+    @AppStorage("pinyin.completed.v1") private var completed = 0
+
+    private var wrongIDs: Set<String> { Set(mistakes.split(separator: ",").map(String.init)) }
+    private var pool: [PinyinExercise] {
+        PinyinLesson.items(group: group).filter { !reviewOnly || wrongIDs.contains($0.id) }
+    }
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                PaperBackground()
+                ScrollView {
+                    VStack(spacing: 20) {
+                        Text("每天一点，读得更清楚").font(.headline)
+                        Picker("专项", selection: $group) {
+                            ForEach(0..<PinyinLesson.groups.count, id: \.self) { Text(PinyinLesson.groups[$0]).tag($0) }
+                        }.pickerStyle(.segmented)
+                        Picker("练习方式", selection: $mode) {
+                            Text("认声母").tag(0)
+                            Text("听音选").tag(1)
+                            Text("我来读").tag(2)
+                        }.pickerStyle(.segmented)
+                        Toggle("只练错题（\(wrongIDs.count)）", isOn: $reviewOnly)
+                        Text("已完成 \(completed) 次练习").font(.subheadline)
+                        if !pool.isEmpty {
+                            lesson(pool[index % pool.count])
+                        } else {
+                            Text("这一组还没有错题，关闭“只练错题”开始吧！").padding().crayonCard(Crayon.blue)
+                        }
+                        Text("朗读核对使用系统中文语音识别，可能需要网络并由 Apple 处理录音。它只能辅助核对音节，不能专业评测口型或发音；孤立声母容易误识别，所以朗读练习使用完整音节。结果不确定时请家长复核。")
+                            .font(.footnote).fixedSize(horizontal: false, vertical: true)
+                    }.padding().frame(maxWidth: 700).frame(maxWidth: .infinity)
+                }
+            }.foregroundStyle(Crayon.ink).navigationTitle("芽芽练拼音")
+        }
+        .onChange(of: group) { _ in reset() }
+        .onChange(of: mode) { _ in reset() }
+        .onChange(of: reviewOnly) { _ in reset() }
+        .onChange(of: speech.phase) { phase in
+            guard phase == .idle, awaitingSpeech else { return }
+            awaitingSpeech = false
+            guard speech.error == nil, !pool.isEmpty, !speech.transcript.isEmpty else { return }
+            let exercise = pool[index % pool.count]
+            let match = PinyinLesson.transcription(speech.transcript, matches: exercise)
+            record(match, exercise: exercise, message: match
+                ? "听到“\(speech.transcript)”，音节匹配！"
+                : "听到“\(speech.transcript)”，与 \(exercise.pinyin) 未匹配。听一次示范，再试试；也可能是识别偏差。")
+        }
+        .onChange(of: scenePhase) { phase in if phase == .background { cancelAudio() } }
+        .onDisappear { cancelAudio() }
+    }
+
+    @ViewBuilder private func lesson(_ item: PinyinExercise) -> some View {
+        VStack(spacing: 18) {
+            Text(mode == 0 ? "找到相同的声母" : mode == 1 ? "先听示范，再选择拼音" : "看拼音，读完整音节")
+            if mode != 1 || answered {
+                Text(mode == 0 ? item.initial : item.pinyin)
+                    .font(.system(size: 76, weight: .bold, design: .rounded))
+                    .minimumScaleFactor(0.6).accessibilityLabel(mode == 0 ? "声母 \(item.initial)" : item.pinyin)
+            } else {
+                Image(systemName: "ear.badge.waveform").font(.system(size: 64)).accessibilityLabel("听音选拼音")
+            }
+            if mode != 0 {
+                Button { play(item) } label: { Label("听示范", systemImage: "speaker.wave.2.fill") }
+                    .buttonStyle(CrayonButtonStyle(color: Crayon.blue)).disabled(speech.isBusy)
+            }
+            if mode == 2 {
+                Text("例如“\(item.word)”的读音。录音时只读一次音节。").font(.subheadline)
+                Button {
+                    speaker.stopSpeaking(at: .immediate)
+                    if speech.phase == .recording { awaitingSpeech = true }
+                    else if speech.phase != .idle { awaitingSpeech = false }
+                    else { feedback = nil; answered = false }
+                    speech.toggle()
+                } label: {
+                    Label(speech.buttonTitle, systemImage: speech.isRecording ? "stop.circle.fill" : "mic.fill")
+                }.buttonStyle(CrayonButtonStyle(color: Crayon.peach))
+                if speech.isRecording { Text("正在录音 \(speech.elapsedText)").accessibilityAddTraits(.updatesFrequently) }
+                if let error = speech.error { Text(error).font(.subheadline) }
+            } else {
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 110))], spacing: 14) {
+                    ForEach(PinyinLesson.items(group: group)) { option in
+                        Button(mode == 0 ? option.initial : option.pinyin) {
+                            let match = option.id == item.id
+                            record(match, exercise: item, message: match ? "选对啦！" : "再看一看：正确的是 \(mode == 0 ? item.initial : item.pinyin)。")
+                        }.buttonStyle(CrayonButtonStyle()).disabled(answered)
+                    }
+                }
+            }
+            if let feedback {
+                Text(feedback).font(.headline).accessibilityAddTraits(.isStaticText)
+                Text(item.hint).font(.body)
+                Button("下一题") {
+                    // Preserve review pool while showing feedback; remove solved
+                    // items only when leaving the question.
+                    if answered && correctAnswer {
+                        var ids = wrongIDs; ids.remove(item.id); mistakes = ids.sorted().joined(separator: ",")
+                    }
+                    if !reviewOnly || !correctAnswer { index += 1 }; feedback = nil; answered = false; cancelAudio()
+                }.buttonStyle(CrayonButtonStyle(color: Crayon.blue))
+            }
+        }.padding(22).frame(maxWidth: .infinity).crayonCard(.white)
+    }
+    private func record(_ correct: Bool, exercise: PinyinExercise, message: String) {
+        guard !answered else { return }
+        answered = true; correctAnswer = correct; completed += 1; feedback = message
+        if !correct { var ids = wrongIDs; ids.insert(exercise.id); mistakes = ids.sorted().joined(separator: ",") }
+    }
+    private func play(_ item: PinyinExercise) {
+        do {
+            let session = AVAudioSession.sharedInstance()
+            try session.setCategory(.playback, mode: .spokenAudio)
+            try session.setActive(true)
+            speaker.stopSpeaking(at: .immediate)
+            let utterance = AVSpeechUtterance(string: item.word)
+            utterance.voice = AVSpeechSynthesisVoice(language: "zh-CN")
+            utterance.rate = 0.38
+            speaker.speak(utterance)
+        } catch { answered = false; correctAnswer = false; feedback = "示范声音暂时不可用，请重试。" }
+    }
+    private func cancelAudio() { awaitingSpeech = false; speech.stop(); speaker.stopSpeaking(at: .immediate) }
+    private func reset() { cancelAudio(); index = 0; feedback = nil; answered = false; correctAnswer = false }
+}

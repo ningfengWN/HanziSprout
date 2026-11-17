@@ -29,6 +29,8 @@
 		C588FE8E13F99B7777A56D56 /* AIProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B3FF43F3655AD6A3EFD903E /* AIProvider.swift */; };
 		19AF00F03B4142DFEA917364 /* OpenAIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACB19707E2BAF830EA79A435 /* OpenAIClient.swift */; };
 		BAE7A316C831D34CC08A0F5C /* OpenAICreditsLinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723A0B3C7E260585E89FB7A /* OpenAICreditsLinks.swift */; };
+		648E20C7B725AEFA2D89335B /* PinyinLesson.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0896F5F44B82ED474ED2DFCE /* PinyinLesson.swift */; };
+		B6628C1FE193DCB58A8DA1B6 /* PinyinPracticeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FC0F985C794C3ABECEF119B /* PinyinPracticeView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -55,6 +57,8 @@
 		3B3FF43F3655AD6A3EFD903E /* AIProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIProvider.swift; sourceTree = "<group>"; };
 		ACB19707E2BAF830EA79A435 /* OpenAIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIClient.swift; sourceTree = "<group>"; };
 		8723A0B3C7E260585E89FB7A /* OpenAICreditsLinks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAICreditsLinks.swift; sourceTree = "<group>"; };
+		0896F5F44B82ED474ED2DFCE /* PinyinLesson.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinyinLesson.swift; sourceTree = "<group>"; };
+		5FC0F985C794C3ABECEF119B /* PinyinPracticeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinyinPracticeView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,6 +90,8 @@
 				CF46D4464B54084CB250AD43 /* PinyinVoice.swift */,
 				ACA17E0A42359C34E3E4432C /* Question.swift */,
 				ACDD57C210C7859BF5986A8C /* RootView.swift */,
+				5FC0F985C794C3ABECEF119B /* PinyinPracticeView.swift */,
+				0896F5F44B82ED474ED2DFCE /* PinyinLesson.swift */,
 				FE2683FD76BFC62C0464E4D1 /* SpeechInput.swift */,
 				6DCEFCAFB4A9AF3663CC6DD7 /* SystemTranslationCard.swift */,
 				D1290B1B4625911A7073D8FF /* TutorModel.swift */,
@@ -214,6 +220,8 @@
 				15424484C94368813292202A /* PinyinVoice.swift in Sources */,
 				A20637F79A317DFE317161E0 /* Question.swift in Sources */,
 				F8C94A0478C05A34C3FAEBF4 /* RootView.swift in Sources */,
+				B6628C1FE193DCB58A8DA1B6 /* PinyinPracticeView.swift in Sources */,
+				648E20C7B725AEFA2D89335B /* PinyinLesson.swift in Sources */,
 				019AA4E3B2A9AE8B5DF26681 /* SpeechInput.swift in Sources */,
 				C6D0CF0CB1191F3860881D34 /* SystemTranslationCard.swift in Sources */,
 				3EA95B4FC62931459F01F9EB /* TutorModel.swift in Sources */,
@@ -230,12 +238,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = 63HR26Z9DJ;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = HanziSprout/Info.plist;
-				MARKETING_VERSION = 1.5.1;
+				MARKETING_VERSION = 1.6.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ningfeng.HanziSprout.yaya;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -248,12 +256,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = 63HR26Z9DJ;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = HanziSprout/Info.plist;
-				MARKETING_VERSION = 1.5.1;
+				MARKETING_VERSION = 1.6.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ningfeng.HanziSprout.yaya;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

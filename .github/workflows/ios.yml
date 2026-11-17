@@ -19,6 +19,10 @@ jobs:
         run: |
           cat HanziSprout/PinyinVoice.swift scripts/pinyin_checks.swift > /tmp/pinyin_checks.swift
           swift /tmp/pinyin_checks.swift
+      - name: Test pinyin practice matching boundaries
+        run: |
+          cat HanziSprout/PinyinLesson.swift scripts/pinyin_lesson_checks.swift > /tmp/pinyin_lesson_checks.swift
+          swift /tmp/pinyin_lesson_checks.swift
       - name: Test offline English lookup and correction boundaries
         run: |
           cat HanziSprout/EnglishCatalog.swift scripts/english_checks.swift > /tmp/english_checks.swift
