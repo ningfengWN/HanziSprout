@@ -28,6 +28,8 @@ struct PinyinPracticeView: View {
                 ScrollView {
                     VStack(spacing: 20) {
                         Text("每天一点，读得更清楚").font(.headline)
+                        NavigationLink("词语跟读与录音回放") { PinyinWordPracticeView() }
+                            .buttonStyle(CrayonButtonStyle(color: Crayon.blue))
                         Picker("专项", selection: $group) {
                             ForEach(0..<PinyinLesson.groups.count, id: \.self) { Text(PinyinLesson.groups[$0]).tag($0) }
                         }.pickerStyle(.segmented)

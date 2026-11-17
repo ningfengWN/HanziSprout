@@ -31,6 +31,7 @@
 		BAE7A316C831D34CC08A0F5C /* OpenAICreditsLinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723A0B3C7E260585E89FB7A /* OpenAICreditsLinks.swift */; };
 		648E20C7B725AEFA2D89335B /* PinyinLesson.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0896F5F44B82ED474ED2DFCE /* PinyinLesson.swift */; };
 		B6628C1FE193DCB58A8DA1B6 /* PinyinPracticeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FC0F985C794C3ABECEF119B /* PinyinPracticeView.swift */; };
+		D1F3C051567124BBA8E66892 /* PinyinWordPracticeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCC73FCAC0503F0AC809482A; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -59,6 +60,7 @@
 		8723A0B3C7E260585E89FB7A /* OpenAICreditsLinks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAICreditsLinks.swift; sourceTree = "<group>"; };
 		0896F5F44B82ED474ED2DFCE /* PinyinLesson.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinyinLesson.swift; sourceTree = "<group>"; };
 		5FC0F985C794C3ABECEF119B /* PinyinPracticeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinyinPracticeView.swift; sourceTree = "<group>"; };
+		DCC73FCAC0503F0AC809482A /* PinyinWordPracticeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinyinWordPracticeView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,6 +77,7 @@
 		482182478A3ECD4745BEA917 /* HanziSprout */ = {
 			isa = PBXGroup;
 			children = (
+				DCC73FCAC0503F0AC809482A /* PinyinWordPracticeView.swift */,
 				8723A0B3C7E260585E89FB7A /* OpenAICreditsLinks.swift */,
 				ACB19707E2BAF830EA79A435 /* OpenAIClient.swift */,
 				3B3FF43F3655AD6A3EFD903E /* AIProvider.swift */,
@@ -205,6 +208,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D1F3C051567124BBA8E66892 /* PinyinWordPracticeView.swift in Sources */,
 				BAE7A316C831D34CC08A0F5C /* OpenAICreditsLinks.swift in Sources */,
 				19AF00F03B4142DFEA917364 /* OpenAIClient.swift in Sources */,
 				C588FE8E13F99B7777A56D56 /* AIProvider.swift in Sources */,
