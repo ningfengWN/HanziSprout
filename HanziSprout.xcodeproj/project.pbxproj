@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8B4C5D6E7F80912345678901 /* PinyinPracticeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A4B5C6D7E8F901234567890 /* PinyinPracticeView.swift */; };
 		019AA4E3B2A9AE8B5DF26681 /* SpeechInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE2683FD76BFC62C0464E4D1 /* SpeechInput.swift */; };
 		15424484C94368813292202A /* PinyinVoice.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF46D4464B54084CB250AD43 /* PinyinVoice.swift */; };
 		2482F727D7FD9652E9D92230 /* WritingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF7D667ADCC0FF9AB0015757 /* WritingView.swift */; };
@@ -32,6 +33,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		9A4B5C6D7E8F901234567890 /* PinyinPracticeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinyinPracticeView.swift; sourceTree = "<group>"; };
 		0189424A5A60FED329FA868E /* LearningAssets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = LearningAssets; sourceTree = "<group>"; };
 		098B78991F551C9AF839428A /* EnglishView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnglishView.swift; sourceTree = "<group>"; };
 		11DEDA116A6379348AE14298 /* HanziSproutApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HanziSproutApp.swift; sourceTree = "<group>"; };
@@ -84,6 +86,7 @@
 				098B78991F551C9AF839428A /* EnglishView.swift */,
 				11DEDA116A6379348AE14298 /* HanziSproutApp.swift */,
 				CF46D4464B54084CB250AD43 /* PinyinVoice.swift */,
+				9A4B5C6D7E8F901234567890 /* PinyinPracticeView.swift */,
 				ACA17E0A42359C34E3E4432C /* Question.swift */,
 				ACDD57C210C7859BF5986A8C /* RootView.swift */,
 				FE2683FD76BFC62C0464E4D1 /* SpeechInput.swift */,
@@ -212,6 +215,7 @@
 				DD96A4DA3832152CFE34CDBE /* EnglishView.swift in Sources */,
 				2C55EF8E927926909783A5EB /* HanziSproutApp.swift in Sources */,
 				15424484C94368813292202A /* PinyinVoice.swift in Sources */,
+				8B4C5D6E7F80912345678901 /* PinyinPracticeView.swift in Sources */,
 				A20637F79A317DFE317161E0 /* Question.swift in Sources */,
 				F8C94A0478C05A34C3FAEBF4 /* RootView.swift in Sources */,
 				019AA4E3B2A9AE8B5DF26681 /* SpeechInput.swift in Sources */,
