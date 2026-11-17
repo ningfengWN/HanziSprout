@@ -32,6 +32,7 @@
 		648E20C7B725AEFA2D89335B /* PinyinLesson.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0896F5F44B82ED474ED2DFCE /* PinyinLesson.swift */; };
 		B6628C1FE193DCB58A8DA1B6 /* PinyinPracticeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FC0F985C794C3ABECEF119B /* PinyinPracticeView.swift */; };
 		D1F3C051567124BBA8E66892 /* PinyinWordPracticeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCC73FCAC0503F0AC809482A; };
+		9ECE81776C7795C6B813B2B0 = {isa = PBXBuildFile; fileRef = 21D78751224824832DCE144C; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -61,6 +62,7 @@
 		0896F5F44B82ED474ED2DFCE /* PinyinLesson.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinyinLesson.swift; sourceTree = "<group>"; };
 		5FC0F985C794C3ABECEF119B /* PinyinPracticeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinyinPracticeView.swift; sourceTree = "<group>"; };
 		DCC73FCAC0503F0AC809482A /* PinyinWordPracticeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinyinWordPracticeView.swift; sourceTree = "<group>"; };
+		21D78751224824832DCE144C = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyTasksView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,6 +79,7 @@
 		482182478A3ECD4745BEA917 /* HanziSprout */ = {
 			isa = PBXGroup;
 			children = (
+				21D78751224824832DCE144C,
 				DCC73FCAC0503F0AC809482A /* PinyinWordPracticeView.swift */,
 				8723A0B3C7E260585E89FB7A /* OpenAICreditsLinks.swift */,
 				ACB19707E2BAF830EA79A435 /* OpenAIClient.swift */,
@@ -208,6 +211,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9ECE81776C7795C6B813B2B0,
 				D1F3C051567124BBA8E66892 /* PinyinWordPracticeView.swift in Sources */,
 				BAE7A316C831D34CC08A0F5C /* OpenAICreditsLinks.swift in Sources */,
 				19AF00F03B4142DFEA917364 /* OpenAIClient.swift in Sources */,
