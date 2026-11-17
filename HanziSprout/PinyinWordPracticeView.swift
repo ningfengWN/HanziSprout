@@ -443,7 +443,7 @@ struct PinyinWordPracticeView: View {
             if !coach.recognized.isEmpty {
                 VStack(spacing: 6) {
                     Text("系统听到：\(coach.recognized)")
-                    if coach.recognized.filter { !$0.isWhitespace && !$0.isPunctuation } == card.word {
+                    if coach.recognized.filter({ !$0.isWhitespace && !$0.isPunctuation }) == card.word {
                         Text("识别到了目标词语 ✓（不代表声母发音完全正确）")
                             .foregroundStyle(.green)
                     } else {

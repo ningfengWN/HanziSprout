@@ -114,7 +114,7 @@ struct PinyinPracticeView: View {
                     if answered && correctAnswer {
                         var ids = wrongIDs; ids.remove(item.id); mistakes = ids.sorted().joined(separator: ",")
                     }
-                    if !reviewOnly || !correctAnswer { index += 1 }; feedback = nil; answered = false; cancelAudio()
+                    if !reviewOnly || !correctAnswer { index += 1 }; self.feedback = nil; answered = false; cancelAudio()
                 }.buttonStyle(CrayonButtonStyle(color: Crayon.blue))
             }
         }.padding(22).frame(maxWidth: .infinity).crayonCard(.white)
